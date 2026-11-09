@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mess Manager</string>
+
+    <!-- Common -->
+    <string name="action_add">Add</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_back">Back</string>
+    <string name="amount_format">৳ %1$.2f</string>
+    <string name="content_desc_add">Add new item</string>
+    <string name="content_desc_delete">Delete</string>
+    <string name="content_desc_previous_day">Previous day</string>
+    <string name="content_desc_next_day">Next day</string>
+    <string name="content_desc_increase">Increase</string>
+    <string name="content_desc_decrease">Decrease</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_meal">Meal</string>
+    <string name="nav_bazar">Bazar</string>
+    <string name="nav_deposit">Deposit</string>
+    <string name="nav_report">Report</string>
+
+    <!-- Home -->
+    <string name="home_title">Mess Manager</string>
+    <string name="home_month_summary">%1$s summary</string>
+    <string name="home_meal_rate">Meal rate</string>
+    <string name="home_total_bazar">Total bazar</string>
+    <string name="home_total_meals">Total meals</string>
+    <string name="home_today_meals">Today\'s meals</string>
+    <string name="home_members_count">%1$d members in this mess</string>
+
+    <!-- Meal -->
+    <string name="meal_title">Daily Meal</string>
+    <string name="meal_breakfast">Breakfast</string>
+    <string name="meal_lunch">Lunch</string>
+    <string name="meal_dinner">Dinner</string>
+    <string name="meal_guest">Guest meals</string>
+    <string name="meal_total_for_day">Total for the day: %1$d</string>
+    <string name="meal_empty">Add members first to start tracking meals.</string>
+
+    <!-- Bazar -->
+    <string name="bazar_title">Bazar</string>
+    <string name="bazar_add_title">Add bazar</string>
+    <string name="bazar_amount">Amount</string>
+    <string name="bazar_note">Note (optional)</string>
+    <string name="bazar_category">Category</string>
+    <string name="bazar_empty">No bazar added yet.</string>
+    <string name="category_fish_meat">Fish &amp; Meat</string>
+    <string name="category_vegetable">Vegetable</string>
+    <string name="category_grocery">Grocery</string>
+    <string name="category_gas">Gas</string>
+    <string name="category_other">Other</string>
+
+    <!-- Deposit -->
+    <string name="deposit_title">Deposit</string>
+    <string name="deposit_add_title">Add deposit</string>
+    <string name="deposit_member">Member</string>
+    <string name="deposit_amount">Amount</string>
+    <string name="deposit_method">Payment method</string>
+    <string name="deposit_empty">No deposits recorded yet.</string>
+    <string name="method_cash">Cash</string>
+    <string name="method_bkash">bKash</string>
+    <string name="method_nagad">Nagad</string>
+    <string name="method_bank">Bank</string>
+
+    <!-- Members -->
+    <string name="members_title">Members</string>
+    <string name="members_add_title">Add member</string>
+    <string name="members_name">Full name</string>
+    <string name="members_phone">Phone number</string>
+    <string name="members_empty">No members yet. Tap + to add one.</string>
+    <string name="members_delete_title">Delete member?</string>
+    <string name="members_delete_message">%1$s and all their meals and deposits will be removed.</string>
+
+    <!-- Report -->
+    <string name="report_title">Monthly Report</string>
+    <string name="report_meals">Meals: %1$d</string>
+    <string name="report_meal_cost">Meal cost</string>
+    <string name="report_deposit">Deposit</string>
+    <string name="report_balance_receivable">Will get back</string>
+    <string name="report_balance_payable">Needs to pay</string>
+    <string name="report_empty">No data for this month yet.</string>
+
+    <!-- Errors -->
+    <string name="error_invalid_amount">Enter a valid amount greater than zero.</string>
+    <string name="error_name_required">Name is required.</string>
+    <string name="error_member_required">Select a member.</string>
+</resources>
