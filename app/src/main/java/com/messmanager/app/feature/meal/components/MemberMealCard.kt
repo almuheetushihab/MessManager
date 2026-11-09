@@ -75,10 +75,41 @@ fun MemberMealCard(
 
 @ThemePreviews
 @Composable
-private fun MemberMealCardPreview() {
+private fun MemberMealCardAllOffPreview() {
     PreviewSurface {
+        val ui = PreviewData.memberMealUis[4] // all off
         MemberMealCard(
-            item = PreviewData.memberMealUis[0],
+            item = ui,
+            onToggle = { _, _ -> },
+            onGuestsChange = { _, _ -> },
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun MemberMealCardAllOnPreview() {
+    PreviewSurface {
+        val ui = PreviewData.memberMealUis[0].copy(
+            entry = PreviewData.memberMealUis[0].entry.copy(breakfast = true, lunch = true, dinner = true)
+        )
+        MemberMealCard(
+            item = ui,
+            onToggle = { _, _ -> },
+            onGuestsChange = { _, _ -> },
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun MemberMealCardWithGuestsPreview() {
+    PreviewSurface {
+        val ui = PreviewData.memberMealUis[2] // has guests
+        MemberMealCard(
+            item = ui,
             onToggle = { _, _ -> },
             onGuestsChange = { _, _ -> },
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),

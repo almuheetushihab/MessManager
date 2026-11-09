@@ -1,5 +1,7 @@
 package com.messmanager.app.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,13 +39,15 @@ fun AppTextField(
 
 @ThemePreviews
 @Composable
-private fun AppTextFieldPreview() {
+private fun AppTextFieldPreviews() {
     PreviewSurface {
-        AppTextField(
-            value = "1500",
-            onValueChange = {},
-            label = "Amount",
+        Column(
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
-        )
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
+        ) {
+            AppTextField(value = "", onValueChange = {}, label = "Normal Field")
+            AppTextField(value = "Rahim Uddin", onValueChange = {}, label = "Filled Field")
+            AppTextField(value = "-50", onValueChange = {}, label = "Error Field", errorText = "Enter a valid amount")
+        }
     }
 }

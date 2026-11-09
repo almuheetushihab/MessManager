@@ -3,6 +3,7 @@ package com.messmanager.app.ui.components
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,11 +46,26 @@ fun AppTopBar(
 
 @ThemePreviews
 @Composable
-private fun AppTopBarPreview() {
+private fun AppTopBarWithBackAndActionsPreview() {
+    PreviewSurface {
+        AppTopBar(
+            title = "Members",
+            onBack = {},
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Rounded.Group, contentDescription = null)
+                }
+            },
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun AppTopBarWithoutBackPreview() {
     PreviewSurface {
         AppTopBar(
             title = "Mess Manager",
-            onBack = {},
         )
     }
 }

@@ -70,10 +70,22 @@ fun BazarItem(
 
 @ThemePreviews
 @Composable
-private fun BazarItemPreview() {
+private fun BazarItemWithNotePreview() {
     PreviewSurface {
         BazarItem(
             bazar = PreviewData.bazarItems[0],
+            onDelete = {},
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun BazarItemWithoutNotePreview() {
+    PreviewSurface {
+        BazarItem(
+            bazar = PreviewData.bazarItems[0].copy(note = ""),
             onDelete = {},
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
         )

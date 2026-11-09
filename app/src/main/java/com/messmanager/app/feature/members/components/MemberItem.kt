@@ -64,10 +64,22 @@ fun MemberItem(
 
 @ThemePreviews
 @Composable
-private fun MemberItemPreview() {
+private fun MemberItemWithPhonePreview() {
     PreviewSurface {
         MemberItem(
             member = PreviewData.members[0],
+            onDelete = {},
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun MemberItemWithoutPhonePreview() {
+    PreviewSurface {
+        MemberItem(
+            member = PreviewData.members[0].copy(phone = ""),
             onDelete = {},
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
         )
