@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
@@ -39,17 +40,25 @@ fun DepositItem(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = deposit.memberName, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = deposit.memberName,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Text(
                     text = "${stringResource(deposit.method.labelRes)} • ${deposit.epochDay.formatEpochDay()}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Text(
                 text = formatMoney(deposit.amount),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.extraColors.success,
+                maxLines = 1,
             )
             IconButton(onClick = onDelete) {
                 Icon(

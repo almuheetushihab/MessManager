@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
@@ -38,17 +39,26 @@ fun BazarItem(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = stringResource(bazar.category.labelRes), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(bazar.category.labelRes),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Text(
                     text = bazar.epochDay.formatEpochDay(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (bazar.note.isNotBlank()) {
                     Text(
                         text = bazar.note,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -56,6 +66,7 @@ fun BazarItem(
                 text = formatMoney(bazar.amount),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
             )
             IconButton(onClick = onDelete) {
                 Icon(

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
@@ -35,7 +36,12 @@ fun MemberMealCard(
 ) {
     val entry = item.entry
     AppCard(modifier = modifier) {
-        Text(text = item.member.name, style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = item.member.name,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,12 +65,13 @@ fun MemberMealCard(
                 text = stringResource(R.string.meal_guest),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { onGuestsChange(entry, -1) }, enabled = entry.guests > 0) {
                     Icon(Icons.Rounded.Remove, contentDescription = stringResource(R.string.content_desc_decrease))
                 }
-                Text(text = entry.guests.toString(), style = MaterialTheme.typography.titleMedium)
+                Text(text = entry.guests.toString(), style = MaterialTheme.typography.titleMedium, maxLines = 1)
                 IconButton(onClick = { onGuestsChange(entry, 1) }) {
                     Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.content_desc_increase))
                 }
