@@ -1,6 +1,7 @@
 package com.messmanager.app.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,8 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,8 +49,9 @@ fun LoadingState(modifier: Modifier = Modifier) {
 @Composable
 fun EmptyState(
     message: String,
-    icon: ImageVector,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    imageRes: Int? = null,
     actionLabel: String? = null,
     onActionClick: (() -> Unit)? = null,
 ) {
@@ -57,12 +62,23 @@ fun EmptyState(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = message,
-            modifier = Modifier.size(MaterialTheme.dimens.iconXl),
-            tint = MaterialTheme.colorScheme.outline,
-        )
+        if (imageRes != null) {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = message,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(MaterialTheme.shapes.medium),
+            )
+        } else if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = message,
+                modifier = Modifier.size(MaterialTheme.dimens.iconXl),
+                tint = MaterialTheme.colorScheme.outline,
+            )
+        }
         Text(
             text = message,
             modifier = Modifier.padding(top = MaterialTheme.dimens.spaceM),

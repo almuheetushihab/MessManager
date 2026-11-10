@@ -1,6 +1,7 @@
 package com.messmanager.app.feature.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,6 +48,7 @@ import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.theme.extraColors
 import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.core.util.formatEpochDay
+import com.messmanager.app.core.util.formatMonthYear
 import com.messmanager.app.domain.model.BazarCategory
 import com.messmanager.app.domain.model.MemberSummary
 import com.messmanager.app.domain.model.PaymentMethod
@@ -55,6 +60,7 @@ import com.messmanager.app.ui.components.MemberAvatar
 import com.messmanager.app.ui.components.MonthPicker
 import com.messmanager.app.ui.components.SectionTitle
 import com.messmanager.app.ui.components.formatMoney
+import java.time.YearMonth
 import kotlin.math.abs
 
 @Composable
@@ -126,6 +132,11 @@ fun HomeContent(
                     .padding(MaterialTheme.dimens.spaceM),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
             ) {
+                MessOverviewBanner(
+                    messName = state.messName,
+                    selectedMonth = state.summary.month,
+                )
+
                 MonthPicker(
                     selectedMonth = state.summary.month,
                     onPreviousMonth = onPreviousMonth,
@@ -157,6 +168,51 @@ fun HomeContent(
                     modifier = Modifier.padding(top = MaterialTheme.dimens.spaceS),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun MessOverviewBanner(
+    messName: String,
+    selectedMonth: YearMonth,
+    modifier: Modifier = Modifier,
+) {
+    AppCard(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = MaterialTheme.dimens.spaceS),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceXs),
+            ) {
+                Text(
+                    text = messName.ifBlank { stringResource(R.string.app_name) },
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = stringResource(R.string.home_month_summary, selectedMonth.formatMonthYear()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Image(
+                painter = painterResource(id = R.drawable.img),
+                contentDescription = messName,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(MaterialTheme.shapes.medium),
+            )
         }
     }
 }

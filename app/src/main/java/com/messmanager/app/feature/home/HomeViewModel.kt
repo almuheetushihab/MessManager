@@ -2,6 +2,7 @@ package com.messmanager.app.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.messmanager.app.data.repository.SettingsRepository
 import com.messmanager.app.domain.repository.MessRepository
 import com.messmanager.app.domain.usecase.CalculateMessSummaryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val calculateMessSummary: CalculateMessSummaryUseCase,
     private val repository: MessRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
     val selectedMonth: StateFlow<YearMonth> = repository.selectedMonth
@@ -30,7 +32,8 @@ class HomeViewModel @Inject constructor(
             repository.observeMealsByDay(LocalDate.now().toEpochDay()),
             repository.observeBazar(),
             repository.observeDeposits(),
-        ) { summary, todayMeals, bazarList, depositList ->
+            settingsRepository.settings,
+        ) { summary, todayMeals, bazarList, depositList, settings ->
             val needsAttention = summary.members
                 .filter { it.balance < -0.01 }
                 .sortedBy { it.balance }
@@ -38,7 +41,7 @@ class HomeViewModel @Inject constructor(
             val bazarActivities = bazarList.map { bazar ->
                 RecentActivity(
                     id = "bazar_${bazar.id}",
-                    title = bazar.category.name, // resolved in UI or formatted
+                    title = bazar.category.name,
                     subtitle = bazar.paidByMemberName ?: "",
                     amount = bazar.amount,
                     epochDay = bazar.epochDay,
@@ -63,6 +66,7 @@ class HomeViewModel @Inject constructor(
 
             HomeUiState(
                 isLoading = false,
+                messName = settings.messName,
                 summary = summary,
                 todayMeals = todayMeals.sumOf { it.totalCount },
                 recentActivities = combinedActivities,

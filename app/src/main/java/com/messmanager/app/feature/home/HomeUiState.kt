@@ -16,6 +16,7 @@ data class RecentActivity(
 
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val messName: String = "",
     val summary: MessSummary = MessSummary(),
     val todayMeals: Int = 0,
     val recentActivities: List<RecentActivity> = emptyList(),
