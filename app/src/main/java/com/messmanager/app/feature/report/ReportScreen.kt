@@ -1,5 +1,8 @@
 package com.messmanager.app.feature.report
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,19 +27,30 @@ import androidx.compose.material.icons.rounded.Assessment
 import androidx.compose.material.icons.rounded.AttachMoney
 import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.LocalGroceryStore
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Restaurant
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,6 +63,7 @@ import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.util.formatMonthYear
 import com.messmanager.app.domain.model.MessSummary
 import com.messmanager.app.feature.report.components.MemberBalanceCard
+import com.messmanager.app.feature.report.export.ReportExporter
 import com.messmanager.app.ui.components.AppTopBar
 import com.messmanager.app.ui.components.ConfirmDialog
 import com.messmanager.app.ui.components.EmptyState
@@ -64,6 +79,28 @@ fun ReportScreen(
     viewModel: ReportViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val exportCsvLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri ->
+        if (uri != null) {
+            val success = ReportExporter.exportCsvToUri(context, uri, state.reportData)
+            val msg = if (success) R.string.report_export_success else R.string.report_export_failed
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val exportPdfLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/pdf"),
+    ) { uri ->
+        if (uri != null) {
+            val success = ReportExporter.exportPdfToUri(context, uri, state.summary)
+            val msg = if (success) R.string.report_export_success else R.string.report_export_failed
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     ReportContent(
         state = state,
         onOpenMembers = onOpenMembers,
@@ -76,6 +113,11 @@ fun ReportScreen(
         onConfirmCloseMonth = viewModel::onConfirmCloseMonth,
         onConfirmReopenMonth = viewModel::onConfirmReopenMonth,
         onDismissDialog = viewModel::onDismissDialog,
+        onExportCsv = { exportCsvLauncher.launch("Mess_Report_${state.summary.month}.csv") },
+        onShareCsv = { ReportExporter.shareCsvFile(context, state.reportData) },
+        onExportPdf = { exportPdfLauncher.launch("Mess_Report_${state.summary.month}.pdf") },
+        onSharePdf = { ReportExporter.sharePdfFile(context, state.summary) },
+        onShareTextSummary = { ReportExporter.shareTextSummary(context, state.summary) },
     )
 }
 
@@ -93,10 +135,86 @@ fun ReportContent(
     onConfirmCloseMonth: () -> Unit,
     onConfirmReopenMonth: () -> Unit,
     onDismissDialog: () -> Unit,
+    onExportCsv: () -> Unit = {},
+    onShareCsv: () -> Unit = {},
+    onExportPdf: () -> Unit = {},
+    onSharePdf: () -> Unit = {},
+    onShareTextSummary: () -> Unit = {},
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { AppTopBar(title = stringResource(R.string.report_title)) },
+        topBar = {
+            AppTopBar(
+                title = stringResource(R.string.report_title),
+                actions = {
+                    Box {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreVert,
+                                contentDescription = stringResource(R.string.report_export_options),
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.report_share_summary)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onShareTextSummary()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.report_export_csv)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onExportCsv()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Rounded.TableChart, contentDescription = null)
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.report_share_csv)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onShareCsv()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.report_export_pdf)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onExportPdf()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Rounded.PictureAsPdf, contentDescription = null)
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.report_share_pdf)) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onSharePdf()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                },
+                            )
+                        }
+                    }
+                },
+            )
+        },
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             MonthPicker(
@@ -147,6 +265,7 @@ fun ReportContent(
                             ReportSummaryHeader(
                                 summary = state.summary,
                                 onNavigateToSharedExpense = onNavigateToSharedExpense,
+                                onShareSummary = onShareTextSummary,
                             )
                         }
 
@@ -236,12 +355,25 @@ fun ReportContent(
 private fun ReportSummaryHeader(
     summary: MessSummary,
     onNavigateToSharedExpense: () -> Unit,
+    onShareSummary: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val totalDeposit = remember(summary.members) { summary.members.sumOf { it.deposit } }
     val gap = MaterialTheme.dimens.spaceM
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(gap)) {
+        OutlinedButton(
+            onClick = onShareSummary,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Share,
+                contentDescription = null,
+                modifier = Modifier.padding(end = MaterialTheme.dimens.spaceS),
+            )
+            Text(stringResource(R.string.report_share_summary))
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.spacedBy(gap),

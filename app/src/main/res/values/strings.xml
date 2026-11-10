@@ -166,6 +166,22 @@
     <string name="report_status_due">Due</string>
     <string name="report_status_refund">Refund</string>
     <string name="report_status_settled">Settled</string>
+    <string name="report_export_csv">Export CSV</string>
+    <string name="report_share_csv">Share CSV</string>
+    <string name="report_export_pdf">Export PDF</string>
+    <string name="report_share_pdf">Share PDF</string>
+    <string name="report_share_summary">Share summary</string>
+    <string name="report_export_options">Export &amp; Share</string>
+    <string name="report_export_success">Report exported successfully</string>
+    <string name="report_export_failed">Failed to export report</string>
+    <string name="pdf_report_title">Mess Monthly Report</string>
+    <string name="pdf_summary_overview">Monthly Overview</string>
+    <string name="pdf_member_balances">Member Balances</string>
+    <string name="csv_meal_grid">Daily Meal Grid</string>
+    <string name="csv_col_daily_total">Daily Total</string>
+    <string name="csv_row_total">Total</string>
+    <string name="csv_col_balance">Final Balance</string>
+    <string name="csv_col_status">Status</string>
 
     <!-- Feedback & Messages -->
     <string name="action_add_first_member">Add first member</string>

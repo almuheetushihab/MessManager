@@ -166,6 +166,22 @@
     <string name="report_status_due">দেনা</string>
     <string name="report_status_refund">ফেরত</string>
     <string name="report_status_settled">সমতা</string>
+    <string name="report_export_csv">CSV এক্সপোর্ট</string>
+    <string name="report_share_csv">CSV শেয়ার করুন</string>
+    <string name="report_export_pdf">PDF এক্সপোর্ট</string>
+    <string name="report_share_pdf">PDF শেয়ার করুন</string>
+    <string name="report_share_summary">সারসংক্ষেপ শেয়ার করুন</string>
+    <string name="report_export_options">এক্সপোর্ট ও শেয়ার</string>
+    <string name="report_export_success">রিপোর্ট সফলভাবে এক্সপোর্ট হয়েছে</string>
+    <string name="report_export_failed">রিপোর্ট এক্সপোর্ট করতে ব্যর্থ হয়েছে</string>
+    <string name="pdf_report_title">মাসিক মেস রিপোর্ট</string>
+    <string name="pdf_summary_overview">মাসিক সারসংক্ষেপ</string>
+    <string name="pdf_member_balances">সদস্য ব্যালেন্স</string>
+    <string name="csv_meal_grid">দৈনিক মিল গ্রিড</string>
+    <string name="csv_col_daily_total">দৈনিক মোট</string>
+    <string name="csv_row_total">মোট</string>
+    <string name="csv_col_balance">শেষ ব্যালেন্স</string>
+    <string name="csv_col_status">স্ট্যাটাস</string>
 
     <!-- Feedback & Messages -->
     <string name="action_add_first_member">প্রথম সদস্য যোগ করুন</string>
