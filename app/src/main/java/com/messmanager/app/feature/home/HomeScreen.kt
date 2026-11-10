@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Group
@@ -61,6 +62,7 @@ fun HomeScreen(
     onNavigateToMeal: () -> Unit = {},
     onNavigateToBazar: () -> Unit = {},
     onNavigateToDeposit: () -> Unit = {},
+    onNavigateToSharedExpense: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,6 +72,7 @@ fun HomeScreen(
         onNavigateToMeal = onNavigateToMeal,
         onNavigateToBazar = onNavigateToBazar,
         onNavigateToDeposit = onNavigateToDeposit,
+        onNavigateToSharedExpense = onNavigateToSharedExpense,
         onPreviousMonth = viewModel::onPreviousMonth,
         onNextMonth = viewModel::onNextMonth,
     )
@@ -82,6 +85,7 @@ fun HomeContent(
     onNavigateToMeal: () -> Unit,
     onNavigateToBazar: () -> Unit,
     onNavigateToDeposit: () -> Unit,
+    onNavigateToSharedExpense: () -> Unit,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
 ) {
@@ -125,6 +129,7 @@ fun HomeContent(
                     onNavigateToMeal = onNavigateToMeal,
                     onNavigateToBazar = onNavigateToBazar,
                     onNavigateToDeposit = onNavigateToDeposit,
+                    onNavigateToSharedExpense = onNavigateToSharedExpense,
                 )
 
                 NeedsAttentionSection(members = state.needsAttentionMembers)
@@ -151,32 +156,46 @@ private fun QuickActionsRow(
     onNavigateToMeal: () -> Unit,
     onNavigateToBazar: () -> Unit,
     onNavigateToDeposit: () -> Unit,
+    onNavigateToSharedExpense: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS)) {
         SectionTitle(text = stringResource(R.string.home_quick_actions))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
-        ) {
-            QuickActionButton(
-                title = stringResource(R.string.home_add_meal),
-                icon = Icons.Rounded.Restaurant,
-                onClick = onNavigateToMeal,
-                modifier = Modifier.weight(1f),
-            )
-            QuickActionButton(
-                title = stringResource(R.string.home_add_bazar),
-                icon = Icons.Rounded.LocalGroceryStore,
-                onClick = onNavigateToBazar,
-                modifier = Modifier.weight(1f),
-            )
-            QuickActionButton(
-                title = stringResource(R.string.home_add_deposit),
-                icon = Icons.Rounded.AccountBalanceWallet,
-                onClick = onNavigateToDeposit,
-                modifier = Modifier.weight(1f),
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
+            ) {
+                QuickActionButton(
+                    title = stringResource(R.string.home_add_meal),
+                    icon = Icons.Rounded.Restaurant,
+                    onClick = onNavigateToMeal,
+                    modifier = Modifier.weight(1f),
+                )
+                QuickActionButton(
+                    title = stringResource(R.string.home_add_bazar),
+                    icon = Icons.Rounded.LocalGroceryStore,
+                    onClick = onNavigateToBazar,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
+            ) {
+                QuickActionButton(
+                    title = stringResource(R.string.home_add_deposit),
+                    icon = Icons.Rounded.AccountBalanceWallet,
+                    onClick = onNavigateToDeposit,
+                    modifier = Modifier.weight(1f),
+                )
+                QuickActionButton(
+                    title = stringResource(R.string.home_shared_expense),
+                    icon = Icons.AutoMirrored.Rounded.ReceiptLong,
+                    onClick = onNavigateToSharedExpense,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }
@@ -406,6 +425,7 @@ private fun HomeScreenNormalPreview() {
             onNavigateToMeal = {},
             onNavigateToBazar = {},
             onNavigateToDeposit = {},
+            onNavigateToSharedExpense = {},
             onPreviousMonth = {},
             onNextMonth = {},
         )
@@ -422,6 +442,7 @@ private fun HomeScreenLoadingPreview() {
             onNavigateToMeal = {},
             onNavigateToBazar = {},
             onNavigateToDeposit = {},
+            onNavigateToSharedExpense = {},
             onPreviousMonth = {},
             onNextMonth = {},
         )

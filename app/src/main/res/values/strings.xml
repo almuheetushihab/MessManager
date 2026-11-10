@@ -181,4 +181,33 @@
     <string name="error_shop_name_required">Shop name is required for Baki.</string>
     <string name="error_name_required">Name is required.</string>
     <string name="error_member_required">Select a member.</string>
+    <string name="error_title_required">Title is required.</string>
+    <string name="error_shares_sum_mismatch">Custom shares sum must equal total amount.</string>
+
+    <!-- Shared Expense -->
+    <string name="shared_expense_title">Shared Expenses</string>
+    <string name="shared_expense_add_title">Add Shared Expense</string>
+    <string name="shared_expense_edit_title">Edit Shared Expense</string>
+    <string name="shared_expense_expense_title">Expense Title</string>
+    <string name="shared_expense_type">Expense Type</string>
+    <string name="shared_expense_split_type">Split Type</string>
+    <string name="shared_expense_split_equal">Equal</string>
+    <string name="shared_expense_split_custom">Custom</string>
+    <string name="shared_expense_equal_split_info">৳ %1$s per member (%2$d members)</string>
+    <string name="shared_expense_custom_split_error">Sum of shares (৳ %1$s) must equal total amount (৳ %2$s).</string>
+    <string name="shared_expense_empty">No shared expenses added yet.</string>
+    <string name="shared_expense_deleted_msg">Shared expense deleted</string>
+    <string name="msg_shared_expense_saved">Shared expense saved</string>
+    <string name="shared_expense_total_month">Month Total: %1$s</string>
+    <string name="home_shared_expense">Shared Expenses</string>
+    <string name="report_shared_bills">Shared bills</string>
+    <string name="report_total_shared_bills">Shared Bills</string>
+
+    <!-- Shared Expense Types -->
+    <string name="shared_expense_type_gas">Gas</string>
+    <string name="shared_expense_type_wifi">WiFi</string>
+    <string name="shared_expense_type_electricity">Electricity</string>
+    <string name="shared_expense_type_maid">Maid</string>
+    <string name="shared_expense_type_rent">Rent</string>
+    <string name="shared_expense_type_other">Other</string>
 </resources>

@@ -125,16 +125,17 @@ object PreviewData {
     )
 
     val memberSummaries = listOf(
-        MemberSummary(member = members[0], meals = 10, mealCost = 900.0, deposit = 3500.0, paidByTotal = 1150.0), // balance: 3500 + 1150 - 900 = +3750
-        MemberSummary(member = members[1], meals = 8, mealCost = 720.0, deposit = 2500.0, paidByTotal = 400.0),  // balance: 2500 + 400 - 720 = +2180
-        MemberSummary(member = members[2], meals = 9, mealCost = 810.0, deposit = 2000.0),  // balance: +1190
-        MemberSummary(member = members[3], meals = 6, mealCost = 540.0, deposit = 1500.0),  // balance: +960
-        MemberSummary(member = members[4], meals = 2, mealCost = 180.0, deposit = 100.0),   // balance: -80 (negative!)
+        MemberSummary(member = members[0], meals = 10, mealCost = 900.0, deposit = 3500.0, paidByTotal = 1150.0, sharedExpenseShare = 300.0), // balance: 3500 + 1150 - 900 - 300 = +3450
+        MemberSummary(member = members[1], meals = 8, mealCost = 720.0, deposit = 2500.0, paidByTotal = 400.0, sharedExpenseShare = 300.0),  // balance: 2500 + 400 - 720 - 300 = +1880
+        MemberSummary(member = members[2], meals = 9, mealCost = 810.0, deposit = 2000.0, sharedExpenseShare = 300.0),  // balance: +890
+        MemberSummary(member = members[3], meals = 6, mealCost = 540.0, deposit = 1500.0, sharedExpenseShare = 300.0),  // balance: +660
+        MemberSummary(member = members[4], meals = 2, mealCost = 180.0, deposit = 100.0, sharedExpenseShare = 300.0),   // balance: -380
     )
 
     val messSummary = MessSummary(
         month = YearMonth.now(),
         totalBazar = 3150.0,
+        totalSharedExpenses = 1500.0,
         totalMeals = 35,
         mealRate = 90.0,
         totalOutstandingBaki = 250.0,

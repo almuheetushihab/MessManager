@@ -2,6 +2,7 @@ package com.messmanager.app.feature.report
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.Assessment
 import androidx.compose.material.icons.rounded.AttachMoney
@@ -47,7 +49,6 @@ import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.util.formatMonthYear
 import com.messmanager.app.domain.model.MessSummary
 import com.messmanager.app.feature.report.components.MemberBalanceCard
-import com.messmanager.app.ui.components.AppCard
 import com.messmanager.app.ui.components.AppTopBar
 import com.messmanager.app.ui.components.ConfirmDialog
 import com.messmanager.app.ui.components.EmptyState
@@ -59,12 +60,14 @@ import com.messmanager.app.ui.components.formatMoney
 @Composable
 fun ReportScreen(
     onOpenMembers: () -> Unit = {},
+    onNavigateToSharedExpense: () -> Unit = {},
     viewModel: ReportViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     ReportContent(
         state = state,
         onOpenMembers = onOpenMembers,
+        onNavigateToSharedExpense = onNavigateToSharedExpense,
         onPreviousMonth = viewModel::onPreviousMonth,
         onNextMonth = viewModel::onNextMonth,
         onSortOrderChange = viewModel::onSortOrderChange,
@@ -81,6 +84,7 @@ fun ReportScreen(
 fun ReportContent(
     state: ReportUiState,
     onOpenMembers: () -> Unit,
+    onNavigateToSharedExpense: () -> Unit,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onSortOrderChange: (ReportSortOrder) -> Unit,
@@ -140,7 +144,10 @@ fun ReportContent(
                         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
                     ) {
                         item {
-                            ReportSummaryHeader(summary = state.summary)
+                            ReportSummaryHeader(
+                                summary = state.summary,
+                                onNavigateToSharedExpense = onNavigateToSharedExpense,
+                            )
                         }
 
                         item {
@@ -228,6 +235,7 @@ fun ReportContent(
 @Composable
 private fun ReportSummaryHeader(
     summary: MessSummary,
+    onNavigateToSharedExpense: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val totalDeposit = remember(summary.members) { summary.members.sumOf { it.deposit } }
@@ -268,25 +276,23 @@ private fun ReportSummaryHeader(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
         }
-        if (summary.totalOutstandingBaki > 0.0) {
-            AppCard {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        StatCard(
-                            title = stringResource(R.string.bazar_outstanding_baki),
-                            value = formatMoney(summary.totalOutstandingBaki),
-                            icon = Icons.Rounded.CreditCard,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
+        Row(
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+            horizontalArrangement = Arrangement.spacedBy(gap),
+        ) {
+            StatCard(
+                title = stringResource(R.string.report_total_shared_bills),
+                value = formatMoney(summary.totalSharedExpenses),
+                icon = Icons.AutoMirrored.Rounded.ReceiptLong,
+                modifier = Modifier.weight(1f).fillMaxHeight().clickable(onClick = onNavigateToSharedExpense),
+            )
+            if (summary.totalOutstandingBaki > 0.0) {
+                StatCard(
+                    title = stringResource(R.string.bazar_outstanding_baki),
+                    value = formatMoney(summary.totalOutstandingBaki),
+                    icon = Icons.Rounded.CreditCard,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
             }
         }
     }
@@ -299,6 +305,7 @@ private fun ReportScreenNormalPreview() {
         ReportContent(
             state = PreviewData.reportNormal,
             onOpenMembers = {},
+            onNavigateToSharedExpense = {},
             onPreviousMonth = {},
             onNextMonth = {},
             onSortOrderChange = {},
@@ -318,6 +325,7 @@ private fun ReportScreenEmptyPreview() {
         ReportContent(
             state = PreviewData.reportEmpty,
             onOpenMembers = {},
+            onNavigateToSharedExpense = {},
             onPreviousMonth = {},
             onNextMonth = {},
             onSortOrderChange = {},
@@ -337,6 +345,7 @@ private fun ReportScreenLoadingPreview() {
         ReportContent(
             state = PreviewData.reportLoading,
             onOpenMembers = {},
+            onNavigateToSharedExpense = {},
             onPreviousMonth = {},
             onNextMonth = {},
             onSortOrderChange = {},

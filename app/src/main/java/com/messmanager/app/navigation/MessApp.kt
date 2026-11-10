@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.messmanager.app.feature.bazar.BazarScreen
@@ -16,8 +18,7 @@ import com.messmanager.app.feature.home.HomeScreen
 import com.messmanager.app.feature.meal.MealScreen
 import com.messmanager.app.feature.members.MembersScreen
 import com.messmanager.app.feature.report.ReportScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import com.messmanager.app.feature.shared_expense.SharedExpenseScreen
 
 @Composable
 fun MessApp() {
@@ -57,6 +58,7 @@ fun MessApp() {
                     onNavigateToMeal = { navigateToTopLevel(AppDestination.Meal) },
                     onNavigateToBazar = { navigateToTopLevel(AppDestination.Bazar) },
                     onNavigateToDeposit = { navigateToTopLevel(AppDestination.Deposit) },
+                    onNavigateToSharedExpense = { navController.navigate(AppDestination.SharedExpense.route) },
                 )
             }
             composable(AppDestination.Meal.route) {
@@ -65,10 +67,16 @@ fun MessApp() {
             composable(AppDestination.Bazar.route) { BazarScreen() }
             composable(AppDestination.Deposit.route) { DepositScreen() }
             composable(AppDestination.Report.route) {
-                ReportScreen(onOpenMembers = { navController.navigate(AppDestination.Members.route) })
+                ReportScreen(
+                    onOpenMembers = { navController.navigate(AppDestination.Members.route) },
+                    onNavigateToSharedExpense = { navController.navigate(AppDestination.SharedExpense.route) },
+                )
             }
             composable(AppDestination.Members.route) {
                 MembersScreen(onBack = { navController.popBackStack() })
+            }
+            composable(AppDestination.SharedExpense.route) {
+                SharedExpenseScreen(onBack = { navController.popBackStack() })
             }
         }
     }

@@ -5,6 +5,7 @@ import com.messmanager.app.data.local.dao.ClosedMonthDao
 import com.messmanager.app.data.local.dao.DepositDao
 import com.messmanager.app.data.local.dao.MealDao
 import com.messmanager.app.data.local.dao.MemberDao
+import com.messmanager.app.data.local.dao.SharedExpenseDao
 import com.messmanager.app.data.local.entity.ClosedMonthEntity
 import com.messmanager.app.data.mapper.toDomain
 import com.messmanager.app.data.mapper.toEntity
@@ -12,6 +13,7 @@ import com.messmanager.app.domain.model.Bazar
 import com.messmanager.app.domain.model.Deposit
 import com.messmanager.app.domain.model.MealEntry
 import com.messmanager.app.domain.model.Member
+import com.messmanager.app.domain.model.SharedExpense
 import com.messmanager.app.domain.repository.MessRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,7 @@ class MessRepositoryImpl @Inject constructor(
     private val bazarDao: BazarDao,
     private val depositDao: DepositDao,
     private val closedMonthDao: ClosedMonthDao,
+    private val sharedExpenseDao: SharedExpenseDao,
 ) : MessRepository {
 
     private val _selectedMonth = MutableStateFlow(YearMonth.now())
@@ -96,6 +99,60 @@ class MessRepositoryImpl @Inject constructor(
     override suspend fun addDeposit(deposit: Deposit) = depositDao.insert(deposit.toEntity())
 
     override suspend fun deleteDeposit(id: Long) = depositDao.deleteById(id)
+
+    override fun observeSharedExpenses(): Flow<List<SharedExpense>> =
+        combine(
+            sharedExpenseDao.observeAllExpenses(),
+            sharedExpenseDao.observeAllShares(),
+            memberDao.observeAll(),
+        ) { expenses, shares, members ->
+            val memberNames = members.associate { it.id to it.name }
+            val sharesByExpense = shares.groupBy { it.expenseId }
+            expenses.map { entity ->
+                val expenseShares = (sharesByExpense[entity.id] ?: emptyList()).map { shareEntity ->
+                    shareEntity.toDomain(memberName = memberNames[shareEntity.memberId])
+                }
+                entity.toDomain(
+                    paidByMemberName = entity.paidByMemberId?.let { memberNames[it] },
+                    shares = expenseShares,
+                )
+            }
+        }
+
+    override fun observeSharedExpensesBetween(start: Long, end: Long): Flow<List<SharedExpense>> =
+        combine(
+            sharedExpenseDao.observeExpensesBetween(start, end),
+            sharedExpenseDao.observeAllShares(),
+            memberDao.observeAll(),
+        ) { expenses, shares, members ->
+            val memberNames = members.associate { it.id to it.name }
+            val sharesByExpense = shares.groupBy { it.expenseId }
+            expenses.map { entity ->
+                val expenseShares = (sharesByExpense[entity.id] ?: emptyList()).map { shareEntity ->
+                    shareEntity.toDomain(memberName = memberNames[shareEntity.memberId])
+                }
+                entity.toDomain(
+                    paidByMemberName = entity.paidByMemberId?.let { memberNames[it] },
+                    shares = expenseShares,
+                )
+            }
+        }
+
+    override suspend fun addSharedExpense(expense: SharedExpense) {
+        val entity = expense.toEntity()
+        val shares = expense.shares.map { it.toEntity() }
+        sharedExpenseDao.insertExpenseWithShares(entity, shares)
+    }
+
+    override suspend fun updateSharedExpense(expense: SharedExpense) {
+        val entity = expense.toEntity()
+        val shares = expense.shares.map { it.toEntity(expense.id) }
+        sharedExpenseDao.updateExpenseWithShares(entity, shares)
+    }
+
+    override suspend fun deleteSharedExpense(id: Long) {
+        sharedExpenseDao.deleteExpenseById(id)
+    }
 
     override fun observeClosedMonths(): Flow<List<YearMonth>> =
         closedMonthDao.observeClosedMonths().map { list ->

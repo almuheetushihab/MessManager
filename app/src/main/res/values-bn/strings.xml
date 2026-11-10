@@ -181,4 +181,33 @@
     <string name="error_shop_name_required">বাকীর জন্য দোকানের নাম আবশ্যক।</string>
     <string name="error_name_required">নাম দিতে হবে।</string>
     <string name="error_member_required">একজন সদস্য নির্বাচন করুন।</string>
+    <string name="error_title_required">বিষয় দিতে হবে।</string>
+    <string name="error_shares_sum_mismatch">ভাগের যোগফল মোট টাকার সমান হতে হবে।</string>
+
+    <!-- Shared Expense -->
+    <string name="shared_expense_title">শেয়ারড খরচ</string>
+    <string name="shared_expense_add_title">শেয়ারড খরচ যোগ করুন</string>
+    <string name="shared_expense_edit_title">শেয়ারড খরচ এডিট করুন</string>
+    <string name="shared_expense_expense_title">খরচের বিষয়</string>
+    <string name="shared_expense_type">খরচের ধরণ</string>
+    <string name="shared_expense_split_type">ভাগ করার ধরণ</string>
+    <string name="shared_expense_split_equal">সমান ভাগ</string>
+    <string name="shared_expense_split_custom">কাস্টম ভাগ</string>
+    <string name="shared_expense_equal_split_info">জনপ্রতি ৳ %1$s (%2$d জন সদস্য)</string>
+    <string name="shared_expense_custom_split_error">সদস্যদের ভাগের যোগফল (৳ %1$s) মোট খরচের (৳ %2$s) সমান হতে হবে।</string>
+    <string name="shared_expense_empty">এখনো কোনো শেয়ারড খরচ যোগ করা হয়নি।</string>
+    <string name="shared_expense_deleted_msg">শেয়ারড খরচ মুছে ফেলা হয়েছে</string>
+    <string name="msg_shared_expense_saved">শেয়ারড খরচ সংরক্ষিত হয়েছে</string>
+    <string name="shared_expense_total_month">মাসের মোট: %1$s</string>
+    <string name="home_shared_expense">শেয়ারড খরচ</string>
+    <string name="report_shared_bills">শেয়ারড বিল</string>
+    <string name="report_total_shared_bills">শেয়ারড বিল</string>
+
+    <!-- Shared Expense Types -->
+    <string name="shared_expense_type_gas">গ্যাস</string>
+    <string name="shared_expense_type_wifi">ওয়াইফাই</string>
+    <string name="shared_expense_type_electricity">বিদ্যুৎ</string>
+    <string name="shared_expense_type_maid">বুয়া/কাজের লোক</string>
+    <string name="shared_expense_type_rent">ভাড়া</string>
+    <string name="shared_expense_type_other">অন্যান্য</string>
 </resources>

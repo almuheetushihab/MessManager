@@ -17,6 +17,7 @@ sealed class AppDestination(val route: String) {
     data object Deposit : AppDestination("deposit")
     data object Report : AppDestination("report")
     data object Members : AppDestination("members")
+    data object SharedExpense : AppDestination("shared_expense")
 }
 
 data class BottomNavItem(

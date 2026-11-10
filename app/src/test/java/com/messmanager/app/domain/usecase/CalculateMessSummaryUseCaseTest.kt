@@ -7,6 +7,10 @@ import com.messmanager.app.domain.model.MealEntry
 import com.messmanager.app.domain.model.Member
 import com.messmanager.app.domain.model.PaymentMethod
 import com.messmanager.app.domain.model.PaymentType
+import com.messmanager.app.domain.model.SharedExpense
+import com.messmanager.app.domain.model.SharedExpenseShare
+import com.messmanager.app.domain.model.SharedExpenseType
+import com.messmanager.app.domain.model.SplitType
 import com.messmanager.app.domain.repository.MessRepository
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -49,48 +53,128 @@ class CalculateMessSummaryUseCaseTest {
     }
 
     @Test
-    fun `carry forward balance from previous month is added to current month balance`() {
+    fun `shared expenses are NOT included in meal rate and subtract from member balance`() {
+        val summary = useCase.calculateSingleMonth(
+            month = month,
+            members = listOf(rahim, karim),
+            meals = listOf(
+                MealEntry(memberId = 1, epochDay = 1, lunch = true), // 1 meal
+                MealEntry(memberId = 2, epochDay = 1, lunch = true), // 1 meal
+            ),
+            bazar = listOf(Bazar(epochDay = 1, amount = 400.0, category = BazarCategory.GROCERY)),
+            deposits = listOf(
+                Deposit(memberId = 1, epochDay = 1, amount = 500.0, method = PaymentMethod.CASH),
+                Deposit(memberId = 2, epochDay = 1, amount = 500.0, method = PaymentMethod.CASH),
+            ),
+            sharedExpenses = listOf(
+                SharedExpense(
+                    id = 1,
+                    epochDay = 1,
+                    title = "WiFi Bill",
+                    type = SharedExpenseType.WIFI,
+                    amount = 600.0,
+                    splitType = SplitType.EQUAL,
+                    paidByMemberId = null, // paid from mess fund
+                    shares = listOf(
+                        SharedExpenseShare(expenseId = 1, memberId = 1, shareAmount = 300.0),
+                        SharedExpenseShare(expenseId = 2, memberId = 2, shareAmount = 300.0),
+                    ),
+                ),
+            ),
+        )
+
+        assertEquals(2, summary.totalMeals)
+        assertEquals(400.0, summary.totalBazar, 0.001)
+        assertEquals(600.0, summary.totalSharedExpenses, 0.001)
+        // Meal rate should be 400 / 2 = 200, NOT affected by 600 WiFi bill
+        assertEquals(200.0, summary.mealRate, 0.001)
+
+        val rahimSummary = summary.members.first { it.member.id == 1L }
+        assertEquals(200.0, rahimSummary.mealCost, 0.001)
+        assertEquals(300.0, rahimSummary.sharedExpenseShare, 0.001)
+        // Balance = deposit (500) + paidByTotal (0) - mealCost (200) - sharedExpenseShare (300) = 0.0
+        assertEquals(0.0, rahimSummary.balance, 0.001)
+    }
+
+    @Test
+    fun `member paying for shared expense gets paidByTotal added to balance`() {
+        val summary = useCase.calculateSingleMonth(
+            month = month,
+            members = listOf(rahim, karim),
+            meals = emptyList(),
+            bazar = emptyList(),
+            deposits = emptyList(),
+            sharedExpenses = listOf(
+                SharedExpense(
+                    id = 1,
+                    epochDay = 1,
+                    title = "Electricity",
+                    type = SharedExpenseType.ELECTRICITY,
+                    amount = 1000.0,
+                    splitType = SplitType.CUSTOM,
+                    paidByMemberId = 1L, // Rahim paid out of pocket
+                    shares = listOf(
+                        SharedExpenseShare(expenseId = 1, memberId = 1, shareAmount = 400.0),
+                        SharedExpenseShare(expenseId = 1, memberId = 2, shareAmount = 600.0),
+                    ),
+                ),
+            ),
+        )
+
+        val rahimSummary = summary.members.first { it.member.id == 1L }
+        val karimSummary = summary.members.first { it.member.id == 2L }
+
+        assertEquals(1000.0, rahimSummary.paidByTotal, 0.001)
+        assertEquals(400.0, rahimSummary.sharedExpenseShare, 0.001)
+        // Rahim balance = deposit(0) + paidByTotal(1000) - mealCost(0) - share(400) = +600
+        assertEquals(600.0, rahimSummary.balance, 0.001)
+
+        assertEquals(0.0, karimSummary.paidByTotal, 0.001)
+        assertEquals(600.0, karimSummary.sharedExpenseShare, 0.001)
+        // Karim balance = deposit(0) + paidByTotal(0) - mealCost(0) - share(600) = -600
+        assertEquals(-600.0, karimSummary.balance, 0.001)
+    }
+
+    @Test
+    fun `carry forward balance from previous month includes shared expense share`() {
         val octDate = LocalDate.of(2026, 10, 15).toEpochDay()
         val novDate = LocalDate.of(2026, 11, 15).toEpochDay()
 
-        val octoberMeals = listOf(
-            MealEntry(memberId = 1, epochDay = octDate, lunch = true, dinner = true), // 2 meals
-        )
-        val octoberBazar = listOf(
-            Bazar(epochDay = octDate, amount = 500.0, category = BazarCategory.GROCERY),
+        val octoberSharedExpenses = listOf(
+            SharedExpense(
+                id = 1,
+                epochDay = octDate,
+                title = "Gas",
+                type = SharedExpenseType.GAS,
+                amount = 400.0,
+                splitType = SplitType.EQUAL,
+                shares = listOf(SharedExpenseShare(expenseId = 1, memberId = 1, shareAmount = 400.0)),
+            ),
         )
         val octoberDeposits = listOf(
             Deposit(memberId = 1, epochDay = octDate, amount = 1000.0, method = PaymentMethod.CASH),
         )
-        // October balance: deposit 1000 - mealCost 500 = +500
+        // October balance: deposit 1000 - sharedExpenseShare 400 = +600
 
-        val novemberMeals = listOf(
-            MealEntry(memberId = 1, epochDay = novDate, lunch = true), // 1 meal
-        )
-        val novemberBazar = listOf(
-            Bazar(epochDay = novDate, amount = 200.0, category = BazarCategory.GROCERY),
-        )
         val novemberDeposits = listOf(
-            Deposit(memberId = 1, epochDay = novDate, amount = 300.0, method = PaymentMethod.CASH),
+            Deposit(memberId = 1, epochDay = novDate, amount = 200.0, method = PaymentMethod.CASH),
         )
-        // November mealCost = 200.0
-        // November balance = previousBalance (+500) + deposit (300) - mealCost (200) = +600.0
 
         val targetMonth = YearMonth.of(2026, 11)
         val summary = useCase.calculateWithCarryForward(
             targetMonth = targetMonth,
             members = listOf(rahim),
-            allMeals = octoberMeals + novemberMeals,
-            allBazar = octoberBazar + novemberBazar,
+            allMeals = emptyList(),
+            allBazar = emptyList(),
             allDeposits = octoberDeposits + novemberDeposits,
+            allSharedExpenses = octoberSharedExpenses,
             maxMonthsBack = 2,
         )
 
         val rahimSummary = summary.members.first { it.member.id == 1L }
-        assertEquals(500.0, rahimSummary.previousBalance, 0.001)
-        assertEquals(300.0, rahimSummary.deposit, 0.001)
-        assertEquals(200.0, rahimSummary.mealCost, 0.001)
-        assertEquals(600.0, rahimSummary.balance, 0.001)
+        assertEquals(600.0, rahimSummary.previousBalance, 0.001)
+        assertEquals(200.0, rahimSummary.deposit, 0.001)
+        assertEquals(800.0, rahimSummary.balance, 0.001)
     }
 
     @Test

@@ -82,6 +82,9 @@ fun MemberBalanceCard(
             )
         }
         AmountRow(label = stringResource(R.string.report_meal_cost), amount = formatMoney(summary.mealCost))
+        if (summary.sharedExpenseShare > 0.0) {
+            AmountRow(label = stringResource(R.string.report_shared_bills), amount = formatMoney(summary.sharedExpenseShare))
+        }
         AmountRow(label = stringResource(R.string.report_deposit), amount = formatMoney(summary.deposit))
         if (summary.paidByTotal > 0.0) {
             AmountRow(label = stringResource(R.string.report_paid_by_total), amount = formatMoney(summary.paidByTotal))
