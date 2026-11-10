@@ -4,22 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.messmanager.app.R
 import com.messmanager.app.core.util.UiText
+import com.messmanager.app.core.util.epochRange
 import com.messmanager.app.domain.model.Bazar
 import com.messmanager.app.domain.model.BazarCategory
 import com.messmanager.app.domain.model.BazarUnit
 import com.messmanager.app.domain.model.PaymentType
 import com.messmanager.app.domain.repository.MessRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BazarViewModel @Inject constructor(
     private val repository: MessRepository,
@@ -28,47 +32,67 @@ class BazarViewModel @Inject constructor(
     private val form = MutableStateFlow<BazarFormState?>(null)
     private val recentlyDeleted = MutableStateFlow<Bazar?>(null)
 
-    val uiState: StateFlow<BazarUiState> = combine(
-        repository.observeBazar(),
-        repository.observeMembers(),
-        form,
-        recentlyDeleted,
-    ) { items, members, form, deleted ->
-        BazarUiState(
-            isLoading = false,
-            items = items,
-            members = members,
-            form = form,
-            recentlyDeletedBazar = deleted,
-        )
+    val uiState: StateFlow<BazarUiState> = repository.selectedMonth.flatMapLatest { month ->
+        val range = month.epochRange()
+        combine(
+            repository.observeBazar().map { list -> list.filter { it.epochDay in range } },
+            repository.observeMembers(),
+            repository.observeIsMonthClosed(month),
+            form,
+            recentlyDeleted,
+        ) { items, members, isClosed, form, deleted ->
+            BazarUiState(
+                isLoading = false,
+                items = items,
+                members = members,
+                isMonthClosed = isClosed,
+                form = form,
+                recentlyDeletedBazar = deleted,
+            )
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BazarUiState())
 
-    fun onAddClick() = form.update {
-        val cat = BazarCategory.GROCERY
-        BazarFormState(
-            category = cat,
-            unit = cat.defaultUnit,
-            allowedUnits = cat.allowedUnits,
-        )
+    fun onPreviousMonth() {
+        repository.setSelectedMonth(repository.selectedMonth.value.minusMonths(1))
     }
 
-    fun onEditClick(bazar: Bazar) = form.update {
+    fun onNextMonth() {
+        repository.setSelectedMonth(repository.selectedMonth.value.plusMonths(1))
+    }
+
+    fun onAddClick() {
+        if (uiState.value.isMonthClosed) return
+        val cat = BazarCategory.GROCERY
+        form.update {
+            BazarFormState(
+                category = cat,
+                unit = cat.defaultUnit,
+                allowedUnits = cat.allowedUnits,
+                dateEpochDay = repository.selectedMonth.value.atDay(1).toEpochDay(),
+            )
+        }
+    }
+
+    fun onEditClick(bazar: Bazar) {
+        if (uiState.value.isMonthClosed) return
         val cat = bazar.category
         val allowed = cat.allowedUnits
         val unit = bazar.unit ?: cat.defaultUnit
-        BazarFormState(
-            id = bazar.id,
-            amount = if (bazar.amount % 1.0 == 0.0) bazar.amount.toLong().toString() else bazar.amount.toString(),
-            quantity = bazar.quantity?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() } ?: "",
-            category = cat,
-            unit = if (allowed.contains(unit)) unit else cat.defaultUnit,
-            allowedUnits = allowed,
-            paymentType = bazar.paymentType,
-            creditShopName = bazar.creditShopName,
-            paidByMemberId = bazar.paidByMemberId,
-            dateEpochDay = bazar.epochDay,
-            note = bazar.note,
-        )
+        form.update {
+            BazarFormState(
+                id = bazar.id,
+                amount = if (bazar.amount % 1.0 == 0.0) bazar.amount.toLong().toString() else bazar.amount.toString(),
+                quantity = bazar.quantity?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() } ?: "",
+                category = cat,
+                unit = if (allowed.contains(unit)) unit else cat.defaultUnit,
+                allowedUnits = allowed,
+                paymentType = bazar.paymentType,
+                creditShopName = bazar.creditShopName,
+                paidByMemberId = bazar.paidByMemberId,
+                dateEpochDay = bazar.epochDay,
+                note = bazar.note,
+            )
+        }
     }
 
     fun onDismissForm() = form.update { null }
@@ -104,6 +128,7 @@ class BazarViewModel @Inject constructor(
     fun onNoteChange(value: String) = form.update { it?.copy(note = value) }
 
     fun onSave() {
+        if (uiState.value.isMonthClosed) return
         val current = form.value ?: return
         val amount = current.amount.toDoubleOrNull()
         if (amount == null || amount <= 0.0) {
@@ -128,13 +153,12 @@ class BazarViewModel @Inject constructor(
                 unit = current.unit,
                 paymentType = current.paymentType,
                 creditShopName = current.creditShopName.trim(),
-                isCreditSettled = if (current.paymentType == PaymentType.CASH) false else false, // retains existing status if editing
+                isCreditSettled = false,
                 paidByMemberId = current.paidByMemberId,
                 note = current.note.trim(),
             )
 
             if (current.isEditMode) {
-                // preserve isCreditSettled when editing
                 val existing = uiState.value.items.find { it.id == current.id }
                 val updatedItem = item.copy(isCreditSettled = existing?.isCreditSettled ?: false)
                 repository.updateBazar(updatedItem)
@@ -146,17 +170,20 @@ class BazarViewModel @Inject constructor(
     }
 
     fun onMarkAsPaid(bazar: Bazar) {
+        if (uiState.value.isMonthClosed) return
         viewModelScope.launch {
             repository.updateBazarCreditSettled(bazar.id, true)
         }
     }
 
     fun onDelete(bazar: Bazar) {
+        if (uiState.value.isMonthClosed) return
         recentlyDeleted.value = bazar
         viewModelScope.launch { repository.deleteBazar(bazar.id) }
     }
 
     fun onUndoDelete() {
+        if (uiState.value.isMonthClosed) return
         val bazarToRestore = recentlyDeleted.value ?: return
         viewModelScope.launch {
             repository.addBazar(bazarToRestore)

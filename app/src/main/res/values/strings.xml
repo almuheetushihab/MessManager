@@ -15,6 +15,8 @@
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_previous_day">Previous day</string>
     <string name="content_desc_next_day">Next day</string>
+    <string name="content_desc_prev_month">Previous month</string>
+    <string name="content_desc_next_month">Next month</string>
     <string name="content_desc_increase">Increase</string>
     <string name="content_desc_decrease">Decrease</string>
 
@@ -37,12 +39,35 @@
 
     <!-- Meal -->
     <string name="meal_title">Daily Meal</string>
+    <string name="meal_today">Today</string>
     <string name="meal_breakfast">Breakfast</string>
     <string name="meal_lunch">Lunch</string>
     <string name="meal_dinner">Dinner</string>
     <string name="meal_guest">Guest meals</string>
     <string name="meal_total_for_day">Total for the day: %1$d</string>
+    <string name="meal_member_day_total">Day total: %1$d meals</string>
     <string name="meal_empty">Add members first to start tracking meals.</string>
+    <string name="meal_quick_actions">Quick Actions</string>
+    <string name="meal_all_on">All ON</string>
+    <string name="meal_all_bf_on">All Breakfast ON</string>
+    <string name="meal_all_lunch_on">All Lunch ON</string>
+    <string name="meal_all_dinner_on">All Dinner ON</string>
+    <string name="meal_copy_yesterday">Copy from yesterday</string>
+    <string name="meal_all_meals_on">All 3 ON</string>
+    <string name="meal_cutoff_passed">Cutoff time passed (%1$s). Meal editing disabled.</string>
+    <string name="meal_admin_override">Admin Override</string>
+    <string name="meal_cutoff_setting">Cutoff Time</string>
+    <string name="meal_cutoff_none">None</string>
+
+    <!-- Month & Status -->
+    <string name="month_closed_badge">Closed</string>
+    <string name="month_read_only">This month is closed (Read-Only)</string>
+    <string name="month_close_title">Close Month?</string>
+    <string name="month_close_message">Are you sure you want to close %1$s? All entries for this month will become read-only and final balances will carry forward to next month.</string>
+    <string name="month_reopen_title">Reopen Month?</string>
+    <string name="month_reopen_message">Are you sure you want to reopen %1$s? This will allow editing entries for this month again.</string>
+    <string name="action_close_month">Close Month</string>
+    <string name="action_reopen_month">Reopen Month</string>
 
     <!-- Bazar -->
     <string name="bazar_title">Bazar</string>
@@ -120,6 +145,7 @@
     <string name="report_meal_cost">Meal cost</string>
     <string name="report_deposit">Deposit</string>
     <string name="report_paid_by_total">Bazar paid</string>
+    <string name="report_previous_balance">Previous balance</string>
     <string name="report_balance_receivable">Will get back</string>
     <string name="report_balance_payable">Needs to pay</string>
     <string name="report_empty">No data for this month yet.</string>

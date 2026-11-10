@@ -15,6 +15,8 @@
     <string name="content_desc_delete">মুছুন</string>
     <string name="content_desc_previous_day">আগের দিন</string>
     <string name="content_desc_next_day">পরের দিন</string>
+    <string name="content_desc_prev_month">আগের মাস</string>
+    <string name="content_desc_next_month">পরের মাস</string>
     <string name="content_desc_increase">বাড়ান</string>
     <string name="content_desc_decrease">কমান</string>
 
@@ -37,12 +39,35 @@
 
     <!-- Meal -->
     <string name="meal_title">দৈনিক মিল</string>
+    <string name="meal_today">আজ</string>
     <string name="meal_breakfast">সকাল</string>
     <string name="meal_lunch">দুপুর</string>
     <string name="meal_dinner">রাত</string>
     <string name="meal_guest">গেস্ট মিল</string>
     <string name="meal_total_for_day">আজকের মোট: %1$d</string>
+    <string name="meal_member_day_total">আজকের মোট: %1$d মিল</string>
     <string name="meal_empty">মিল ট্র্যাক করতে আগে সদস্য যোগ করুন।</string>
+    <string name="meal_quick_actions">দ্রুত অ্যাকশন</string>
+    <string name="meal_all_on">সবাই চালুক</string>
+    <string name="meal_all_bf_on">সবার সকাল चालू</string>
+    <string name="meal_all_lunch_on">সবার দুপুর চালু</string>
+    <string name="meal_all_dinner_on">সবার রাত চালু</string>
+    <string name="meal_copy_yesterday">গতকাল থেকে কপি করুন</string>
+    <string name="meal_all_meals_on">সব ৩টি চালু</string>
+    <string name="meal_cutoff_passed">সময় শেষ (%1$s)। মিল এডিট বন্ধ রয়েছে।</string>
+    <string name="meal_admin_override">এডমিন ওভাররাইড</string>
+    <string name="meal_cutoff_setting">কাট অফ সময়</string>
+    <string name="meal_cutoff_none">কোনোটি নয়</string>
+
+    <!-- Month & Status -->
+    <string name="month_closed_badge">বন্ধ</string>
+    <string name="month_read_only">এই মাসটি বন্ধ (শুধুমাত্র পড়া যাবে)</string>
+    <string name="month_close_title">মাস বন্ধ করবেন?</string>
+    <string name="month_close_message">আপনি কি নিশ্চিত যে %1$s মাসটি বন্ধ করতে চান? সব এন্ট্রি লক হয়ে যাবে এবং ব্যালেন্স পরের মাসে যুক্ত হবে।</string>
+    <string name="month_reopen_title">মাস পুনরায় চালু করবেন?</string>
+    <string name="month_reopen_message">আপনি কি নিশ্চিত যে %1$s মাসটি পুনরায় চালু করতে চান?</string>
+    <string name="action_close_month">মাস বন্ধ করুন</string>
+    <string name="action_reopen_month">মাস পুনরায় খুলুন</string>
 
     <!-- Bazar -->
     <string name="bazar_title">বাজার</string>
@@ -120,6 +145,7 @@
     <string name="report_meal_cost">মিলের খরচ</string>
     <string name="report_deposit">জমা</string>
     <string name="report_paid_by_total">বাজার পরিশোধ</string>
+    <string name="report_previous_balance">পূর্বের ব্যালেন্স</string>
     <string name="report_balance_receivable">ফেরত পাবেন</string>
     <string name="report_balance_payable">দিতে হবে</string>
     <string name="report_empty">এই মাসের কোনো তথ্য নেই।</string>

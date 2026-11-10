@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +46,7 @@ import com.messmanager.app.ui.components.AddFab
 import com.messmanager.app.ui.components.AppTopBar
 import com.messmanager.app.ui.components.EmptyState
 import com.messmanager.app.ui.components.LoadingState
+import com.messmanager.app.ui.components.MonthPicker
 import com.messmanager.app.ui.components.formatMoney
 
 @Composable
@@ -51,6 +54,8 @@ fun BazarScreen(viewModel: BazarViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     BazarContent(
         state = state,
+        onPreviousMonth = viewModel::onPreviousMonth,
+        onNextMonth = viewModel::onNextMonth,
         onAddClick = viewModel::onAddClick,
         onEditClick = viewModel::onEditClick,
         onDelete = viewModel::onDelete,
@@ -76,6 +81,8 @@ fun BazarScreen(viewModel: BazarViewModel = hiltViewModel()) {
 @Composable
 fun BazarContent(
     state: BazarUiState,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
     onAddClick: () -> Unit,
     onEditClick: (Bazar) -> Unit,
     onDelete: (Bazar) -> Unit,
@@ -115,43 +122,74 @@ fun BazarContent(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = { AppTopBar(title = stringResource(R.string.bazar_title)) },
-        floatingActionButton = { AddFab(onClick = onAddClick) },
+        floatingActionButton = {
+            if (!state.isMonthClosed) {
+                AddFab(onClick = onAddClick)
+            }
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { padding ->
-        when {
-            state.isLoading -> LoadingState(Modifier.padding(padding))
-            state.items.isEmpty() -> EmptyState(
-                message = stringResource(R.string.bazar_empty),
-                icon = Icons.Rounded.LocalGroceryStore,
-                modifier = Modifier.padding(padding),
-            )
-            else -> {
-                val groupedItems = remember(state.items) {
-                    state.items.groupBy { it.epochDay }.toSortedMap(Comparator.reverseOrder())
-                }
+        Column(modifier = Modifier.padding(padding)) {
+            val currentMonth = state.items.firstOrNull()?.epochDay?.let {
+                java.time.YearMonth.from(java.time.LocalDate.ofEpochDay(it))
+            } ?: java.time.YearMonth.now()
 
-                LazyColumn(
-                    modifier = Modifier.padding(padding),
-                    contentPadding = PaddingValues(bottom = MaterialTheme.dimens.spaceL),
+            MonthPicker(
+                selectedMonth = currentMonth,
+                onPreviousMonth = onPreviousMonth,
+                onNextMonth = onNextMonth,
+                isClosed = state.isMonthClosed,
+            )
+
+            if (state.isMonthClosed) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colorResource(R.color.closed_month_container))
+                        .padding(MaterialTheme.dimens.spaceS),
                 ) {
-                    groupedItems.forEach { (epochDay, itemsForDay) ->
-                        stickyHeader(key = "header_$epochDay") {
-                            DayHeader(
-                                epochDay = epochDay,
-                                dayTotal = itemsForDay.sumOf { it.amount },
-                            )
-                        }
-                        items(itemsForDay, key = { it.id }) { bazar ->
-                            BazarItem(
-                                bazar = bazar,
-                                onEdit = { onEditClick(bazar) },
-                                onDelete = { onDelete(bazar) },
-                                onMarkAsPaid = { onMarkAsPaid(bazar) },
-                                modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.dimens.spaceM,
-                                    vertical = MaterialTheme.dimens.spaceXs,
-                                ),
-                            )
+                    Text(
+                        text = stringResource(R.string.month_read_only),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colorResource(R.color.on_closed_month_container),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+
+            when {
+                state.isLoading -> LoadingState()
+                state.items.isEmpty() -> EmptyState(
+                    message = stringResource(R.string.bazar_empty),
+                    icon = Icons.Rounded.LocalGroceryStore,
+                )
+                else -> {
+                    val groupedItems = remember(state.items) {
+                        state.items.groupBy { it.epochDay }.toSortedMap(Comparator.reverseOrder())
+                    }
+
+                    LazyColumn(
+                        contentPadding = PaddingValues(bottom = MaterialTheme.dimens.spaceL),
+                    ) {
+                        groupedItems.forEach { (epochDay, itemsForDay) ->
+                            stickyHeader(key = "header_$epochDay") {
+                                DayHeader(
+                                    epochDay = epochDay,
+                                    dayTotal = itemsForDay.sumOf { it.amount },
+                                )
+                            }
+                            items(itemsForDay, key = { it.id }) { bazar ->
+                                BazarItem(
+                                    bazar = bazar,
+                                    onEdit = { if (!state.isMonthClosed) onEditClick(bazar) },
+                                    onDelete = { if (!state.isMonthClosed) onDelete(bazar) },
+                                    onMarkAsPaid = { if (!state.isMonthClosed) onMarkAsPaid(bazar) },
+                                    modifier = Modifier.padding(
+                                        horizontal = MaterialTheme.dimens.spaceM,
+                                        vertical = MaterialTheme.dimens.spaceXs,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
@@ -216,6 +254,8 @@ private fun BazarScreenNormalPreview() {
     PreviewSurface {
         BazarContent(
             state = PreviewData.bazarNormal,
+            onPreviousMonth = {},
+            onNextMonth = {},
             onAddClick = {},
             onEditClick = {},
             onDelete = {},
@@ -244,6 +284,8 @@ private fun BazarScreenEmptyPreview() {
     PreviewSurface {
         BazarContent(
             state = PreviewData.bazarEmpty,
+            onPreviousMonth = {},
+            onNextMonth = {},
             onAddClick = {},
             onEditClick = {},
             onDelete = {},
@@ -272,6 +314,8 @@ private fun BazarScreenLoadingPreview() {
     PreviewSurface {
         BazarContent(
             state = PreviewData.bazarLoading,
+            onPreviousMonth = {},
+            onNextMonth = {},
             onAddClick = {},
             onEditClick = {},
             onDelete = {},

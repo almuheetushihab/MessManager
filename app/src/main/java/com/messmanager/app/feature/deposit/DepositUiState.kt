@@ -17,5 +17,6 @@ data class DepositUiState(
     val isLoading: Boolean = true,
     val items: List<Deposit> = emptyList(),
     val members: List<Member> = emptyList(),
+    val isMonthClosed: Boolean = false,
     val form: DepositFormState? = null,
 )

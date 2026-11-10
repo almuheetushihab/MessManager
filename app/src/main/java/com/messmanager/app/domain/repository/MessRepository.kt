@@ -5,8 +5,13 @@ import com.messmanager.app.domain.model.Deposit
 import com.messmanager.app.domain.model.MealEntry
 import com.messmanager.app.domain.model.Member
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import java.time.YearMonth
 
 interface MessRepository {
+    val selectedMonth: StateFlow<YearMonth>
+    fun setSelectedMonth(month: YearMonth)
+
     fun observeMembers(): Flow<List<Member>>
     suspend fun addMember(member: Member)
     suspend fun deleteMember(id: Long)
@@ -14,6 +19,8 @@ interface MessRepository {
     fun observeMealsByDay(epochDay: Long): Flow<List<MealEntry>>
     fun observeMealsBetween(start: Long, end: Long): Flow<List<MealEntry>>
     suspend fun saveMeal(entry: MealEntry)
+    suspend fun saveMeals(entries: List<MealEntry>)
+    suspend fun copyMealsFromYesterday(targetEpochDay: Long)
 
     fun observeBazar(): Flow<List<Bazar>>
     suspend fun addBazar(bazar: Bazar)
@@ -24,4 +31,9 @@ interface MessRepository {
     fun observeDeposits(): Flow<List<Deposit>>
     suspend fun addDeposit(deposit: Deposit)
     suspend fun deleteDeposit(id: Long)
+
+    fun observeClosedMonths(): Flow<List<YearMonth>>
+    fun observeIsMonthClosed(month: YearMonth): Flow<Boolean>
+    suspend fun closeMonth(month: YearMonth)
+    suspend fun reopenMonth(month: YearMonth)
 }

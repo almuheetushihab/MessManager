@@ -13,6 +13,11 @@ data class MealUiState(
     val isLoading: Boolean = true,
     val date: LocalDate = LocalDate.now(),
     val items: List<MemberMealUi> = emptyList(),
+    val isMonthClosed: Boolean = false,
+    val cutoffTime: String? = null,
+    val adminOverride: Boolean = false,
+    val isCutoffPassed: Boolean = false,
 ) {
     val dayTotal: Int get() = items.sumOf { it.entry.totalCount }
+    val isEditingDisabled: Boolean get() = isMonthClosed || (isCutoffPassed && !adminOverride)
 }

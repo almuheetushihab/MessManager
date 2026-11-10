@@ -52,6 +52,12 @@ fun MemberBalanceCard(
             )
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.dimens.spaceS))
+        if (summary.previousBalance != 0.0) {
+            AmountRow(
+                label = stringResource(R.string.report_previous_balance),
+                amount = formatMoney(summary.previousBalance),
+            )
+        }
         AmountRow(label = stringResource(R.string.report_meal_cost), amount = formatMoney(summary.mealCost))
         AmountRow(label = stringResource(R.string.report_deposit), amount = formatMoney(summary.deposit))
         if (summary.paidByTotal > 0.0) {

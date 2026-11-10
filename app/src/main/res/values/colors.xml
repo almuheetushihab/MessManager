@@ -23,4 +23,8 @@
     <color name="on_baki_container">#E65100</color>
     <color name="baki_settled_container">#E8F5E9</color>
     <color name="on_baki_settled_container">#1B5E20</color>
+    <color name="closed_month_container">#EEEEEE</color>
+    <color name="on_closed_month_container">#616161</color>
+    <color name="all_on_chip_container">#E8F5E9</color>
+    <color name="on_all_on_chip_container">#1B5E20</color>
 </resources>

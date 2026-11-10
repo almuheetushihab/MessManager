@@ -1,7 +1,7 @@
 package com.messmanager.app.feature.home
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -24,10 +24,10 @@ import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
-import com.messmanager.app.core.util.formatMonthYear
 import com.messmanager.app.feature.home.components.StatGrid
 import com.messmanager.app.ui.components.AppTopBar
 import com.messmanager.app.ui.components.LoadingState
+import com.messmanager.app.ui.components.MonthPicker
 
 @Composable
 fun HomeScreen(
@@ -35,13 +35,20 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeContent(state = state, onOpenMembers = onOpenMembers)
+    HomeContent(
+        state = state,
+        onOpenMembers = onOpenMembers,
+        onPreviousMonth = viewModel::onPreviousMonth,
+        onNextMonth = viewModel::onNextMonth,
+    )
 }
 
 @Composable
 fun HomeContent(
     state: HomeUiState,
     onOpenMembers: () -> Unit,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -70,10 +77,11 @@ fun HomeContent(
                     .padding(MaterialTheme.dimens.spaceM),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
             ) {
-                Text(
-                    text = stringResource(R.string.home_month_summary, state.summary.month.formatMonthYear()),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
+                MonthPicker(
+                    selectedMonth = state.summary.month,
+                    onPreviousMonth = onPreviousMonth,
+                    onNextMonth = onNextMonth,
+                    isClosed = state.summary.isClosed,
                 )
                 StatGrid(state = state)
                 Text(
@@ -93,6 +101,8 @@ private fun HomeScreenNormalPreview() {
         HomeContent(
             state = PreviewData.homeNormal,
             onOpenMembers = {},
+            onPreviousMonth = {},
+            onNextMonth = {},
         )
     }
 }
@@ -104,6 +114,8 @@ private fun HomeScreenLoadingPreview() {
         HomeContent(
             state = PreviewData.homeLoading,
             onOpenMembers = {},
+            onPreviousMonth = {},
+            onNextMonth = {},
         )
     }
 }

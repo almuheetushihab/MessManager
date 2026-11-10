@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -20,6 +21,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import java.time.YearMonth
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BazarViewModelTest {
@@ -27,14 +29,20 @@ class BazarViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val bazarFlow = MutableStateFlow<List<Bazar>>(emptyList())
     private val membersFlow = MutableStateFlow<List<Member>>(emptyList())
+    private val selectedMonthFlow = MutableStateFlow(YearMonth.now())
 
     private val repository = object : MessRepository {
+        override val selectedMonth = selectedMonthFlow
+        override fun setSelectedMonth(month: YearMonth) { selectedMonthFlow.value = month }
+
         override fun observeMembers(): Flow<List<Member>> = membersFlow
         override suspend fun addMember(member: Member) {}
         override suspend fun deleteMember(id: Long) {}
         override fun observeMealsByDay(epochDay: Long) = error("Not needed")
         override fun observeMealsBetween(start: Long, end: Long) = error("Not needed")
         override suspend fun saveMeal(entry: com.messmanager.app.domain.model.MealEntry) {}
+        override suspend fun saveMeals(entries: List<com.messmanager.app.domain.model.MealEntry>) {}
+        override suspend fun copyMealsFromYesterday(targetEpochDay: Long) {}
         override fun observeBazar(): Flow<List<Bazar>> = bazarFlow
         override suspend fun addBazar(bazar: Bazar) { bazarFlow.value = bazarFlow.value + bazar }
         override suspend fun updateBazar(bazar: Bazar) {}
@@ -43,6 +51,10 @@ class BazarViewModelTest {
         override fun observeDeposits() = error("Not needed")
         override suspend fun addDeposit(deposit: com.messmanager.app.domain.model.Deposit) {}
         override suspend fun deleteDeposit(id: Long) {}
+        override fun observeClosedMonths(): Flow<List<YearMonth>> = flowOf(emptyList())
+        override fun observeIsMonthClosed(month: YearMonth): Flow<Boolean> = flowOf(false)
+        override suspend fun closeMonth(month: YearMonth) {}
+        override suspend fun reopenMonth(month: YearMonth) {}
     }
 
     private lateinit var viewModel: BazarViewModel

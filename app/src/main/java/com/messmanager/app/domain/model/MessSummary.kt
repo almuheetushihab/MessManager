@@ -8,9 +8,10 @@ data class MemberSummary(
     val mealCost: Double,
     val deposit: Double,
     val paidByTotal: Double = 0.0,
+    val previousBalance: Double = 0.0,
 ) {
     /** Positive: member gets money back. Negative: member needs to pay. */
-    val balance: Double get() = deposit + paidByTotal - mealCost
+    val balance: Double get() = previousBalance + deposit + paidByTotal - mealCost
 }
 
 data class MessSummary(
@@ -19,5 +20,6 @@ data class MessSummary(
     val totalMeals: Int = 0,
     val mealRate: Double = 0.0,
     val totalOutstandingBaki: Double = 0.0,
+    val isClosed: Boolean = false,
     val members: List<MemberSummary> = emptyList(),
 )

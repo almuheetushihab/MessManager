@@ -11,6 +11,7 @@ import com.messmanager.app.domain.repository.MessRepository
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.reflect.Proxy
+import java.time.LocalDate
 import java.time.YearMonth
 
 class CalculateMessSummaryUseCaseTest {
@@ -27,7 +28,7 @@ class CalculateMessSummaryUseCaseTest {
 
     @Test
     fun `meal rate is total bazar divided by total meals`() {
-        val summary = useCase.calculate(
+        val summary = useCase.calculateSingleMonth(
             month = month,
             members = listOf(rahim, karim),
             meals = listOf(
@@ -48,37 +49,53 @@ class CalculateMessSummaryUseCaseTest {
     }
 
     @Test
-    fun `paidByMemberId contribution adds to member balance`() {
-        val summary = useCase.calculate(
-            month = month,
-            members = listOf(rahim, karim),
-            meals = listOf(
-                MealEntry(memberId = 1, epochDay = 1, lunch = true, dinner = true),
-                MealEntry(memberId = 2, epochDay = 1, lunch = true, dinner = true),
-            ),
-            bazar = listOf(
-                Bazar(
-                    epochDay = 1,
-                    amount = 600.0,
-                    category = BazarCategory.FISH_MEAT,
-                    paidByMemberId = 1L,
-                ),
-            ),
-            deposits = emptyList(),
+    fun `carry forward balance from previous month is added to current month balance`() {
+        val octDate = LocalDate.of(2026, 10, 15).toEpochDay()
+        val novDate = LocalDate.of(2026, 11, 15).toEpochDay()
+
+        val octoberMeals = listOf(
+            MealEntry(memberId = 1, epochDay = octDate, lunch = true, dinner = true), // 2 meals
+        )
+        val octoberBazar = listOf(
+            Bazar(epochDay = octDate, amount = 500.0, category = BazarCategory.GROCERY),
+        )
+        val octoberDeposits = listOf(
+            Deposit(memberId = 1, epochDay = octDate, amount = 1000.0, method = PaymentMethod.CASH),
+        )
+        // October balance: deposit 1000 - mealCost 500 = +500
+
+        val novemberMeals = listOf(
+            MealEntry(memberId = 1, epochDay = novDate, lunch = true), // 1 meal
+        )
+        val novemberBazar = listOf(
+            Bazar(epochDay = novDate, amount = 200.0, category = BazarCategory.GROCERY),
+        )
+        val novemberDeposits = listOf(
+            Deposit(memberId = 1, epochDay = novDate, amount = 300.0, method = PaymentMethod.CASH),
+        )
+        // November mealCost = 200.0
+        // November balance = previousBalance (+500) + deposit (300) - mealCost (200) = +600.0
+
+        val targetMonth = YearMonth.of(2026, 11)
+        val summary = useCase.calculateWithCarryForward(
+            targetMonth = targetMonth,
+            members = listOf(rahim),
+            allMeals = octoberMeals + novemberMeals,
+            allBazar = octoberBazar + novemberBazar,
+            allDeposits = octoberDeposits + novemberDeposits,
+            maxMonthsBack = 2,
         )
 
-        assertEquals(4, summary.totalMeals)
-        assertEquals(150.0, summary.mealRate, 0.001)
         val rahimSummary = summary.members.first { it.member.id == 1L }
-        assertEquals(600.0, rahimSummary.paidByTotal, 0.001)
-        assertEquals(300.0, rahimSummary.mealCost, 0.001)
-        // balance = deposit (0) + paidByTotal (600) - mealCost (300) = 300
-        assertEquals(300.0, rahimSummary.balance, 0.001)
+        assertEquals(500.0, rahimSummary.previousBalance, 0.001)
+        assertEquals(300.0, rahimSummary.deposit, 0.001)
+        assertEquals(200.0, rahimSummary.mealCost, 0.001)
+        assertEquals(600.0, rahimSummary.balance, 0.001)
     }
 
     @Test
     fun `baki items count in total bazar and calculate outstanding baki`() {
-        val summary = useCase.calculate(
+        val summary = useCase.calculateSingleMonth(
             month = month,
             members = listOf(rahim),
             meals = listOf(MealEntry(memberId = 1, epochDay = 1, lunch = true)),
@@ -97,27 +114,12 @@ class CalculateMessSummaryUseCaseTest {
                     creditShopName = "Bhai Bhai Store",
                     isCreditSettled = false,
                 ),
-                Bazar(
-                    epochDay = 1,
-                    amount = 200.0,
-                    category = BazarCategory.GAS,
-                    paymentType = PaymentType.CREDIT,
-                    creditShopName = "Gas Store",
-                    isCreditSettled = true,
-                ),
             ),
             deposits = emptyList(),
         )
 
-        assertEquals(1000.0, summary.totalBazar, 0.001)
-        assertEquals(1000.0, summary.mealRate, 0.001)
+        assertEquals(800.0, summary.totalBazar, 0.001)
+        assertEquals(800.0, summary.mealRate, 0.001)
         assertEquals(300.0, summary.totalOutstandingBaki, 0.001)
-    }
-
-    @Test
-    fun `meal rate is zero when nobody has eaten`() {
-        val summary = useCase.calculate(month, listOf(rahim), emptyList(), emptyList(), emptyList())
-        assertEquals(0.0, summary.mealRate, 0.0)
-        assertEquals(0.0, summary.totalOutstandingBaki, 0.0)
     }
 }

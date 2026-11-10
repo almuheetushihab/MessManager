@@ -5,10 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.messmanager.app.data.local.dao.BazarDao
+import com.messmanager.app.data.local.dao.ClosedMonthDao
 import com.messmanager.app.data.local.dao.DepositDao
 import com.messmanager.app.data.local.dao.MealDao
 import com.messmanager.app.data.local.dao.MemberDao
 import com.messmanager.app.data.local.entity.BazarEntity
+import com.messmanager.app.data.local.entity.ClosedMonthEntity
 import com.messmanager.app.data.local.entity.DepositEntity
 import com.messmanager.app.data.local.entity.MealEntity
 import com.messmanager.app.data.local.entity.MemberEntity
@@ -46,9 +48,29 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `closed_months` (
+                `month` TEXT NOT NULL,
+                `closedAtEpochDay` INTEGER NOT NULL,
+                PRIMARY KEY(`month`)
+            )
+            """.trimIndent(),
+        )
+    }
+}
+
 @Database(
-    entities = [MemberEntity::class, MealEntity::class, BazarEntity::class, DepositEntity::class],
-    version = 2,
+    entities = [
+        MemberEntity::class,
+        MealEntity::class,
+        BazarEntity::class,
+        DepositEntity::class,
+        ClosedMonthEntity::class,
+    ],
+    version = 3,
     exportSchema = false,
 )
 abstract class MessDatabase : RoomDatabase() {
@@ -56,6 +78,7 @@ abstract class MessDatabase : RoomDatabase() {
     abstract fun mealDao(): MealDao
     abstract fun bazarDao(): BazarDao
     abstract fun depositDao(): DepositDao
+    abstract fun closedMonthDao(): ClosedMonthDao
 
     companion object {
         const val NAME = "mess_manager.db"
