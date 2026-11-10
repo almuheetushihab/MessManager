@@ -19,3 +19,4 @@ Thumbs.db
 # Signing files
 *.keystore
 *.jks
+keystore.properties

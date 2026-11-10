@@ -18,6 +18,15 @@ interface MealDao {
     @Query("SELECT * FROM meals WHERE epochDay BETWEEN :start AND :end")
     fun observeBetween(start: Long, end: Long): Flow<List<MealEntity>>
 
+    @Query("SELECT * FROM meals")
+    suspend fun getAll(): List<MealEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(meal: MealEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(meals: List<MealEntity>)
+
+    @Query("DELETE FROM meals")
+    suspend fun deleteAll()
 }
