@@ -18,6 +18,7 @@ import com.messmanager.app.feature.home.HomeScreen
 import com.messmanager.app.feature.meal.MealScreen
 import com.messmanager.app.feature.members.MembersScreen
 import com.messmanager.app.feature.report.ReportScreen
+import com.messmanager.app.feature.settings.SettingsScreen
 import com.messmanager.app.feature.shared_expense.SharedExpenseScreen
 
 @Composable
@@ -55,6 +56,7 @@ fun MessApp() {
             composable(AppDestination.Home.route) {
                 HomeScreen(
                     onOpenMembers = { navController.navigate(AppDestination.Members.route) },
+                    onOpenSettings = { navController.navigate(AppDestination.Settings.route) },
                     onNavigateToMeal = { navigateToTopLevel(AppDestination.Meal) },
                     onNavigateToBazar = { navigateToTopLevel(AppDestination.Bazar) },
                     onNavigateToDeposit = { navigateToTopLevel(AppDestination.Deposit) },
@@ -77,6 +79,9 @@ fun MessApp() {
             }
             composable(AppDestination.SharedExpense.route) {
                 SharedExpenseScreen(onBack = { navController.popBackStack() })
+            }
+            composable(AppDestination.Settings.route) {
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
         }
     }

@@ -167,7 +167,7 @@ fun ReportContent(
                                     onShareTextSummary()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                    Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.report_share_summary))
                                 },
                             )
                             DropdownMenuItem(
@@ -177,7 +177,7 @@ fun ReportContent(
                                     onExportCsv()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.TableChart, contentDescription = null)
+                                    Icon(Icons.Rounded.TableChart, contentDescription = stringResource(R.string.report_export_csv))
                                 },
                             )
                             DropdownMenuItem(
@@ -187,7 +187,7 @@ fun ReportContent(
                                     onShareCsv()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                    Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.report_share_csv))
                                 },
                             )
                             DropdownMenuItem(
@@ -197,7 +197,7 @@ fun ReportContent(
                                     onExportPdf()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.PictureAsPdf, contentDescription = null)
+                                    Icon(Icons.Rounded.PictureAsPdf, contentDescription = stringResource(R.string.report_export_pdf))
                                 },
                             )
                             DropdownMenuItem(
@@ -207,7 +207,7 @@ fun ReportContent(
                                     onSharePdf()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Share, contentDescription = null)
+                                    Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.report_share_pdf))
                                 },
                             )
                         }

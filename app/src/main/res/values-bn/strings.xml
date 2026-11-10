@@ -13,6 +13,8 @@
     <string name="quick_amount_format">৳%1$d</string>
     <string name="content_desc_add">নতুন যোগ করুন</string>
     <string name="content_desc_delete">মুছুন</string>
+    <string name="content_desc_edit">এডিট করুন</string>
+    <string name="content_desc_share">শেয়ার করুন</string>
     <string name="content_desc_previous_day">আগের দিন</string>
     <string name="content_desc_next_day">পরের দিন</string>
     <string name="content_desc_prev_month">আগের মাস</string>
@@ -226,4 +228,37 @@
     <string name="shared_expense_type_maid">বুয়া/কাজের লোক</string>
     <string name="shared_expense_type_rent">ভাড়া</string>
     <string name="shared_expense_type_other">অন্যান্য</string>
+
+    <!-- Settings -->
+    <string name="settings_title">সেটিংস</string>
+    <string name="settings_appearance">অ্যাপিয়ারেন্স ও ভাষা</string>
+    <string name="settings_theme">থিম</string>
+    <string name="settings_theme_system">সিস্টেম ডিফল্ট</string>
+    <string name="settings_theme_light">লাইট</string>
+    <string name="settings_theme_dark">ডার্ক</string>
+    <string name="settings_language">ভাষা</string>
+    <string name="settings_lang_system">সিস্টেম ডিফল্ট</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_bn">বাংলা</string>
+    <string name="settings_mess_info">মেসের তথ্য</string>
+    <string name="settings_mess_name">মেসের নাম</string>
+    <string name="settings_mess_name_hint">মেসের নাম লিখুন</string>
+    <string name="settings_meal_rules">মিলের নিয়মাবলী</string>
+    <string name="settings_cutoff_time">মিল কাট অফ সময়</string>
+    <string name="settings_cutoff_time_hint">যেমন ২০:০০ (HH:mm)</string>
+    <string name="settings_cutoff_time_helper">কাট অফ সময়ের পর আজকের দৈনিক মিল এডিট করা যাবে না (এডমিন ওভাররাইড ব্যতিরেকে)।</string>
+    <string name="settings_admin_override">এডমিন ওভাররাইড</string>
+    <string name="settings_admin_override_summary">কাট অফ সময় পার হলেও মিল এডিটের অনুমতি দিন</string>
+    <string name="settings_backup_restore">ব্যাকআপ ও রিস্টোর</string>
+    <string name="settings_backup_desc">ডাটাবেস ব্যাকআপ এক্সপোর্ট করুন অথবা পূর্বে সেভ করা ব্যাকআপ ফাইল থেকে রিস্টোর করুন।</string>
+    <string name="settings_export_db">ব্যাকআপ এক্সপোর্ট করুন (JSON)</string>
+    <string name="settings_import_db">ব্যাকআপ রিস্টোর করুন (JSON)</string>
+    <string name="settings_restore_confirm_title">ডাটাবেস রিস্টোর করবেন?</string>
+    <string name="settings_restore_confirm_msg">ব্যাকআপ ফাইল থেকে রিস্টোর করলে বর্তমান মেসের সকল সদস্য, মিল, বাজার ও খরচের তথ্য মুছে যাবে। আপনি কি নিশ্চিত?</string>
+    <string name="settings_export_success">ডাটাবেস সফলভাবে এক্সপোর্ট করা হয়েছে।</string>
+    <string name="settings_export_failed">এক্সপোর্ট ব্যর্থ হয়েছে: %1$s</string>
+    <string name="settings_import_success">ডাটাবেস সফলভাবে রিস্টোর করা হয়েছে।</string>
+    <string name="settings_import_failed">রিস্টোর ব্যর্থ হয়েছে: %1$s</string>
+    <string name="content_desc_settings">সেটিংস</string>
+    <string name="error_database_operation">ডাটাবেস কার্যক্রমে ত্রুটি ঘটেছে। পুনরায় চেষ্টা করুন।</string>
 </resources>

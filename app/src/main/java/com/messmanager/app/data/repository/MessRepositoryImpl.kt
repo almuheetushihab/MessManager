@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -44,32 +45,46 @@ class MessRepositoryImpl @Inject constructor(
     }
 
     override fun observeMembers(): Flow<List<Member>> =
-        memberDao.observeAll().map { list -> list.map { it.toDomain() } }
+        memberDao.observeAll()
+            .map { list -> list.map { it.toDomain() } }
+            .catch { emit(emptyList()) }
 
-    override suspend fun addMember(member: Member) = memberDao.insert(member.toEntity())
+    override suspend fun addMember(member: Member) {
+        runCatching { memberDao.insert(member.toEntity()) }
+    }
 
-    override suspend fun deleteMember(id: Long) = memberDao.deleteById(id)
+    override suspend fun deleteMember(id: Long) {
+        runCatching { memberDao.deleteById(id) }
+    }
 
     override fun observeMealsByDay(epochDay: Long): Flow<List<MealEntry>> =
-        mealDao.observeByDay(epochDay).map { list -> list.map { it.toDomain() } }
+        mealDao.observeByDay(epochDay)
+            .map { list -> list.map { it.toDomain() } }
+            .catch { emit(emptyList()) }
 
     override fun observeMealsBetween(start: Long, end: Long): Flow<List<MealEntry>> =
-        mealDao.observeBetween(start, end).map { list -> list.map { it.toDomain() } }
+        mealDao.observeBetween(start, end)
+            .map { list -> list.map { it.toDomain() } }
+            .catch { emit(emptyList()) }
 
-    override suspend fun saveMeal(entry: MealEntry) = mealDao.upsert(entry.toEntity())
+    override suspend fun saveMeal(entry: MealEntry) {
+        runCatching { mealDao.upsert(entry.toEntity()) }
+    }
 
     override suspend fun saveMeals(entries: List<MealEntry>) {
-        entries.forEach { mealDao.upsert(it.toEntity()) }
+        runCatching { entries.forEach { mealDao.upsert(it.toEntity()) } }
     }
 
     override suspend fun copyMealsFromYesterday(targetEpochDay: Long) {
-        val yesterdayEpoch = targetEpochDay - 1
-        val yesterdayMeals = mealDao.getByDay(yesterdayEpoch)
-        if (yesterdayMeals.isNotEmpty()) {
-            val copiedMeals = yesterdayMeals.map { entity ->
-                entity.copy(epochDay = targetEpochDay)
+        runCatching {
+            val yesterdayEpoch = targetEpochDay - 1
+            val yesterdayMeals = mealDao.getByDay(yesterdayEpoch)
+            if (yesterdayMeals.isNotEmpty()) {
+                val copiedMeals = yesterdayMeals.map { entity ->
+                    entity.copy(epochDay = targetEpochDay)
+                }
+                copiedMeals.forEach { mealDao.upsert(it) }
             }
-            copiedMeals.forEach { mealDao.upsert(it) }
         }
     }
 
@@ -79,26 +94,37 @@ class MessRepositoryImpl @Inject constructor(
             bazars.map { entity ->
                 entity.toDomain(paidByMemberName = entity.paidByMemberId?.let { memberNames[it] })
             }
-        }
+        }.catch { emit(emptyList()) }
 
-    override suspend fun addBazar(bazar: Bazar) = bazarDao.insert(bazar.toEntity())
+    override suspend fun addBazar(bazar: Bazar) {
+        runCatching { bazarDao.insert(bazar.toEntity()) }
+    }
 
-    override suspend fun updateBazar(bazar: Bazar) = bazarDao.update(bazar.toEntity())
+    override suspend fun updateBazar(bazar: Bazar) {
+        runCatching { bazarDao.update(bazar.toEntity()) }
+    }
 
-    override suspend fun updateBazarCreditSettled(id: Long, isSettled: Boolean) =
-        bazarDao.updateCreditSettled(id, isSettled)
+    override suspend fun updateBazarCreditSettled(id: Long, isSettled: Boolean) {
+        runCatching { bazarDao.updateCreditSettled(id, isSettled) }
+    }
 
-    override suspend fun deleteBazar(id: Long) = bazarDao.deleteById(id)
+    override suspend fun deleteBazar(id: Long) {
+        runCatching { bazarDao.deleteById(id) }
+    }
 
     override fun observeDeposits(): Flow<List<Deposit>> =
         combine(depositDao.observeAll(), memberDao.observeAll()) { deposits, members ->
             val names = members.associate { it.id to it.name }
             deposits.map { it.toDomain(memberName = names[it.memberId].orEmpty()) }
-        }
+        }.catch { emit(emptyList()) }
 
-    override suspend fun addDeposit(deposit: Deposit) = depositDao.insert(deposit.toEntity())
+    override suspend fun addDeposit(deposit: Deposit) {
+        runCatching { depositDao.insert(deposit.toEntity()) }
+    }
 
-    override suspend fun deleteDeposit(id: Long) = depositDao.deleteById(id)
+    override suspend fun deleteDeposit(id: Long) {
+        runCatching { depositDao.deleteById(id) }
+    }
 
     override fun observeSharedExpenses(): Flow<List<SharedExpense>> =
         combine(
@@ -117,7 +143,7 @@ class MessRepositoryImpl @Inject constructor(
                     shares = expenseShares,
                 )
             }
-        }
+        }.catch { emit(emptyList()) }
 
     override fun observeSharedExpensesBetween(start: Long, end: Long): Flow<List<SharedExpense>> =
         combine(
@@ -136,42 +162,49 @@ class MessRepositoryImpl @Inject constructor(
                     shares = expenseShares,
                 )
             }
-        }
+        }.catch { emit(emptyList()) }
 
     override suspend fun addSharedExpense(expense: SharedExpense) {
-        val entity = expense.toEntity()
-        val shares = expense.shares.map { it.toEntity() }
-        sharedExpenseDao.insertExpenseWithShares(entity, shares)
+        runCatching {
+            val entity = expense.toEntity()
+            val shares = expense.shares.map { it.toEntity() }
+            sharedExpenseDao.insertExpenseWithShares(entity, shares)
+        }
     }
 
     override suspend fun updateSharedExpense(expense: SharedExpense) {
-        val entity = expense.toEntity()
-        val shares = expense.shares.map { it.toEntity(expense.id) }
-        sharedExpenseDao.updateExpenseWithShares(entity, shares)
+        runCatching {
+            val entity = expense.toEntity()
+            val shares = expense.shares.map { it.toEntity(expense.id) }
+            sharedExpenseDao.updateExpenseWithShares(entity, shares)
+        }
     }
 
     override suspend fun deleteSharedExpense(id: Long) {
-        sharedExpenseDao.deleteExpenseById(id)
+        runCatching { sharedExpenseDao.deleteExpenseById(id) }
     }
 
     override fun observeClosedMonths(): Flow<List<YearMonth>> =
-        closedMonthDao.observeClosedMonths().map { list ->
-            list.mapNotNull { str -> runCatching { YearMonth.parse(str) }.getOrNull() }
-        }
+        closedMonthDao.observeClosedMonths()
+            .map { list -> list.mapNotNull { str -> runCatching { YearMonth.parse(str) }.getOrNull() } }
+            .catch { emit(emptyList()) }
 
     override fun observeIsMonthClosed(month: YearMonth): Flow<Boolean> =
         closedMonthDao.observeIsClosed(month.toString())
+            .catch { emit(false) }
 
     override suspend fun closeMonth(month: YearMonth) {
-        closedMonthDao.closeMonth(
-            ClosedMonthEntity(
-                month = month.toString(),
-                closedAtEpochDay = LocalDate.now().toEpochDay(),
-            ),
-        )
+        runCatching {
+            closedMonthDao.closeMonth(
+                ClosedMonthEntity(
+                    month = month.toString(),
+                    closedAtEpochDay = LocalDate.now().toEpochDay(),
+                ),
+            )
+        }
     }
 
     override suspend fun reopenMonth(month: YearMonth) {
-        closedMonthDao.reopenMonth(month.toString())
+        runCatching { closedMonthDao.reopenMonth(month.toString()) }
     }
 }

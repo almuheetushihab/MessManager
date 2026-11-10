@@ -125,7 +125,7 @@ fun SharedExpenseItem(
                         onEdit()
                     },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
+                        Icon(imageVector = Icons.Rounded.Edit, contentDescription = stringResource(R.string.content_desc_edit))
                     },
                 )
                 DropdownMenuItem(
@@ -135,7 +135,7 @@ fun SharedExpenseItem(
                         onDelete()
                     },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Rounded.Delete, contentDescription = null)
+                        Icon(imageVector = Icons.Rounded.Delete, contentDescription = stringResource(R.string.content_desc_delete))
                     },
                 )
             }

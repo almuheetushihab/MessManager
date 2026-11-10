@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.LocalGroceryStore
 import androidx.compose.material.icons.rounded.Restaurant
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +60,7 @@ import kotlin.math.abs
 @Composable
 fun HomeScreen(
     onOpenMembers: () -> Unit,
+    onOpenSettings: () -> Unit = {},
     onNavigateToMeal: () -> Unit = {},
     onNavigateToBazar: () -> Unit = {},
     onNavigateToDeposit: () -> Unit = {},
@@ -69,6 +71,7 @@ fun HomeScreen(
     HomeContent(
         state = state,
         onOpenMembers = onOpenMembers,
+        onOpenSettings = onOpenSettings,
         onNavigateToMeal = onNavigateToMeal,
         onNavigateToBazar = onNavigateToBazar,
         onNavigateToDeposit = onNavigateToDeposit,
@@ -82,6 +85,7 @@ fun HomeScreen(
 fun HomeContent(
     state: HomeUiState,
     onOpenMembers: () -> Unit,
+    onOpenSettings: () -> Unit,
     onNavigateToMeal: () -> Unit,
     onNavigateToBazar: () -> Unit,
     onNavigateToDeposit: () -> Unit,
@@ -99,6 +103,12 @@ fun HomeContent(
                         Icon(
                             imageVector = Icons.Rounded.Group,
                             contentDescription = stringResource(R.string.members_title),
+                        )
+                    }
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(R.string.content_desc_settings),
                         )
                     }
                 },
@@ -422,6 +432,7 @@ private fun HomeScreenNormalPreview() {
         HomeContent(
             state = PreviewData.homeNormal,
             onOpenMembers = {},
+            onOpenSettings = {},
             onNavigateToMeal = {},
             onNavigateToBazar = {},
             onNavigateToDeposit = {},
@@ -439,6 +450,7 @@ private fun HomeScreenLoadingPreview() {
         HomeContent(
             state = PreviewData.homeLoading,
             onOpenMembers = {},
+            onOpenSettings = {},
             onNavigateToMeal = {},
             onNavigateToBazar = {},
             onNavigateToDeposit = {},

@@ -1,46 +1,71 @@
-# Mess Manager (Kotlin + Jetpack Compose)
+# Mess Manager
 
-Offline-first mess meal management app: daily meals, bazar, deposits, auto meal rate and member balance.
+An offline-first Android application built with **Kotlin** and **Jetpack Compose** for managing bachelor/mess meals, bazar expenses, member deposits, shared utility bills, and monthly balance settlements.
+
+---
+
+## Features
+
+- **Daily Meals**: Track daily breakfast, lunch, dinner, and guest meals with cutoff time rules and admin override.
+- **Bazar Tracking**: Record individual or mess-fund bazar expenses with categories, units, and credit (Baki) tracking.
+- **Member Deposits**: Record member money deposits (Cash, bKash, Nagad, Bank).
+- **Shared Expenses**: Equal or custom split for shared bills (Rent, Gas, WiFi, Electricity, Maid).
+- **Monthly Summary & Reports**: Automatic calculation of meal rate and balance settlements with **CSV** and **PDF** export & share capabilities.
+- **Settings & Preferences**:
+  - **Theme**: System Default, Light, and Dark mode.
+  - **Language**: Per-app locale support for System Default, English, and Bangla (বাংলা).
+  - **Mess Info & Cutoff Time**: Custom mess name and meal editing cutoff time.
+- **Database Backup & Restore**: Full JSON database export and import via Storage Access Framework (SAF) with schema versioning (`schemaVersion: 4`) and transactional safety.
+
+---
 
 ## Architecture
-MVVM + Clean-ish layers, Hilt DI, Room, Navigation Compose, StateFlow.
 
-```
-com.messmanager.app
-├── core
-│   ├── theme/      Theme, Type, Dimens, ExtraColors (all values read from XML resources)
-│   └── util/       UiText, date helpers
-├── data
-│   ├── local/      Room database, entities, DAOs
-│   ├── mapper/     Entity <-> domain mappers
-│   └── repository/ MessRepositoryImpl
-├── domain
-│   ├── model/      Pure Kotlin models
-│   ├── repository/ MessRepository interface
-│   └── usecase/    CalculateMessSummaryUseCase (meal rate + balance)
-├── di/             Hilt modules
-├── navigation/     Routes, bottom bar, NavHost
-├── ui/components/  Reusable composables (cards, dialogs, fields, states)
-└── feature/        One package per screen
-    ├── home/ meal/ bazar/ deposit/ members/ report/
-    │   ├── XxxScreen.kt
-    │   ├── XxxViewModel.kt
-    │   ├── XxxUiState.kt
-    │   └── components/   screen specific composables
+Built using **MVVM** architecture following Android best practices:
+
+- **UI**: Jetpack Compose, Material 3, Navigation Compose
+- **State**: StateFlow, `collectAsStateWithLifecycle`
+- **DI**: Hilt (`@HiltViewModel`, `@Singleton`)
+- **Database**: Room Database with migrations & transactions
+- **Preferences**: DataStore Preferences
+- **Localization**: Multi-language support (`values/strings.xml` & `values-bn/strings.xml`)
+
+---
+
+## Build Instructions
+
+### Prerequisites
+- **Android Studio**: Koala (2024.1.1) or newer
+- **JDK**: JDK 17
+- **Android SDK**: Compile SDK 34, Min SDK 26
+
+### Debug Build
+```bash
+./gradlew assembleDebug
 ```
 
-## No hard coding
-- Texts: `res/values/strings.xml`, Bangla in `res/values-bn/strings.xml`
-- Colors: `res/values/colors.xml` and `res/values-night/colors.xml` (dark mode)
-- Sizes: `res/values/dimens.xml`, used via `MaterialTheme.dimens`
-- ViewModels emit `UiText` instead of raw strings
+### Run Unit Tests
+```bash
+./gradlew test
+```
 
-## Run
-Open the folder in Android Studio (Koala or newer, JDK 17), let Gradle sync, run the `app` configuration.
+### Release Build & Signing Setup
+To sign a release APK, create a `keystore.properties` file in the project root directory (not committed to Git):
 
-## Calculation
-- meal rate = total bazar / total meals (current month)
-- member balance = deposit - (member meals x meal rate)
+```properties
+storeFile=path/to/release.keystore
+storePassword=your_keystore_password
+keyAlias=your_key_alias
+keyPassword=your_key_password
+```
 
-## Next steps
-Excel/CSV export, month picker, login and cloud sync (Firebase), shared expenses (gas, bua bill), notifications.
+Build the release APK:
+```bash
+./gradlew assembleRelease
+```
+*(If `keystore.properties` is missing, the build gracefully falls back to debug signing).*
+
+---
+
+## License
+Free & Open Source - Mess Manager App.

@@ -21,8 +21,17 @@ interface SharedExpenseDao {
     @Query("SELECT * FROM shared_expense_shares")
     fun observeAllShares(): Flow<List<SharedExpenseShareEntity>>
 
-    @Insert
+    @Query("SELECT * FROM shared_expenses")
+    suspend fun getAllExpenses(): List<SharedExpenseEntity>
+
+    @Query("SELECT * FROM shared_expense_shares")
+    suspend fun getAllShares(): List<SharedExpenseShareEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: SharedExpenseEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllExpenses(expenses: List<SharedExpenseEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShares(shares: List<SharedExpenseShareEntity>)
@@ -35,6 +44,12 @@ interface SharedExpenseDao {
 
     @Query("DELETE FROM shared_expenses WHERE id = :id")
     suspend fun deleteExpenseById(id: Long)
+
+    @Query("DELETE FROM shared_expense_shares")
+    suspend fun deleteAllShares()
+
+    @Query("DELETE FROM shared_expenses")
+    suspend fun deleteAllExpenses()
 
     @Transaction
     suspend fun insertExpenseWithShares(expense: SharedExpenseEntity, shares: List<SharedExpenseShareEntity>): Long {

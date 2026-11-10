@@ -28,7 +28,7 @@ fun AppBottomBar(
             NavigationBarItem(
                 selected = selected,
                 onClick = { onNavigate(item.destination) },
-                icon = { Icon(item.icon, contentDescription = null) },
+                icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
                 label = { Text(stringResource(item.labelRes)) },
             )
         }
@@ -50,7 +50,7 @@ private fun AppBottomBarPreviews() {
                         NavigationBarItem(
                             selected = selected,
                             onClick = {},
-                            icon = { Icon(item.icon, contentDescription = null) },
+                            icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
                             label = { Text(stringResource(item.labelRes)) },
                         )
                     }
