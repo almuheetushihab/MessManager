@@ -42,6 +42,7 @@ import com.messmanager.app.feature.meal.components.DateSelector
 import com.messmanager.app.feature.meal.components.MealQuickActions
 import com.messmanager.app.feature.meal.components.MemberMealCard
 import com.messmanager.app.ui.components.AppTopBar
+import com.messmanager.app.ui.components.ClosedMonthBanner
 import com.messmanager.app.ui.components.EmptyState
 import com.messmanager.app.ui.components.LoadingState
 import kotlinx.coroutines.launch
@@ -102,19 +103,7 @@ fun MealContent(
             )
 
             AnimatedVisibility(visible = state.isMonthClosed) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colorResource(R.color.closed_month_container))
-                        .padding(MaterialTheme.dimens.spaceS),
-                ) {
-                    Text(
-                        text = stringResource(R.string.month_read_only),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = colorResource(R.color.on_closed_month_container),
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
+                ClosedMonthBanner()
             }
 
             AnimatedVisibility(visible = !state.isMonthClosed && state.isCutoffPassed) {

@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,6 +63,7 @@ import com.messmanager.app.domain.model.MessSummary
 import com.messmanager.app.feature.report.components.MemberBalanceCard
 import com.messmanager.app.feature.report.export.ReportExporter
 import com.messmanager.app.ui.components.AppTopBar
+import com.messmanager.app.ui.components.ClosedMonthBanner
 import com.messmanager.app.ui.components.ConfirmDialog
 import com.messmanager.app.ui.components.EmptyState
 import com.messmanager.app.ui.components.LoadingState
@@ -225,19 +224,7 @@ fun ReportContent(
             )
 
             AnimatedVisibility(visible = state.summary.isClosed) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colorResource(R.color.closed_month_container))
-                        .padding(MaterialTheme.dimens.spaceS),
-                ) {
-                    Text(
-                        text = stringResource(R.string.month_read_only),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = colorResource(R.color.on_closed_month_container),
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
+                ClosedMonthBanner()
             }
 
             when {
@@ -362,16 +349,17 @@ private fun ReportSummaryHeader(
     val gap = MaterialTheme.dimens.spaceM
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(gap)) {
+        val shareSummaryText = stringResource(R.string.report_share_summary)
         OutlinedButton(
             onClick = onShareSummary,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(
                 imageVector = Icons.Rounded.Share,
-                contentDescription = null,
+                contentDescription = shareSummaryText,
                 modifier = Modifier.padding(end = MaterialTheme.dimens.spaceS),
             )
-            Text(stringResource(R.string.report_share_summary))
+            Text(shareSummaryText)
         }
 
         Row(

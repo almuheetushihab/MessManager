@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
@@ -22,6 +23,7 @@ import com.messmanager.app.core.preview.ThemePreviews
 fun AppTopBar(
     title: String,
     onBack: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
@@ -37,6 +39,7 @@ fun AppTopBar(
             }
         },
         actions = actions,
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground,
@@ -49,11 +52,14 @@ fun AppTopBar(
 private fun AppTopBarWithBackAndActionsPreview() {
     PreviewSurface {
         AppTopBar(
-            title = "Members",
+            title = stringResource(R.string.members_title),
             onBack = {},
             actions = {
                 IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Rounded.Group, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Rounded.Group,
+                        contentDescription = stringResource(R.string.members_title),
+                    )
                 }
             },
         )
@@ -65,7 +71,7 @@ private fun AppTopBarWithBackAndActionsPreview() {
 private fun AppTopBarWithoutBackPreview() {
     PreviewSurface {
         AppTopBar(
-            title = "Mess Manager",
+            title = stringResource(R.string.app_name),
         )
     }
 }

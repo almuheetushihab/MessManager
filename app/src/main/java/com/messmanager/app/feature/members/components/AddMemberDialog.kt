@@ -1,5 +1,7 @@
 package com.messmanager.app.feature.members.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -22,11 +24,13 @@ fun AddMemberDialog(
     onPhoneChange: (String) -> Unit,
     onSave: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     FormDialog(
         title = stringResource(R.string.members_add_title),
         onConfirm = onSave,
         onDismiss = onDismiss,
+        modifier = modifier,
     ) {
         AddMemberForm(
             form = form,
@@ -41,19 +45,25 @@ fun AddMemberForm(
     form: MemberFormState,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppTextField(
-        value = form.name,
-        onValueChange = onNameChange,
-        label = stringResource(R.string.members_name),
-        errorText = form.nameError?.asString(),
-    )
-    AppTextField(
-        value = form.phone,
-        onValueChange = onPhoneChange,
-        label = stringResource(R.string.members_phone),
-        keyboardType = KeyboardType.Phone,
-    )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
+    ) {
+        AppTextField(
+            value = form.name,
+            onValueChange = onNameChange,
+            label = stringResource(R.string.members_name),
+            errorText = form.nameError?.asString(),
+        )
+        AppTextField(
+            value = form.phone,
+            onValueChange = onPhoneChange,
+            label = stringResource(R.string.members_phone),
+            keyboardType = KeyboardType.Phone,
+        )
+    }
 }
 
 @ThemePreviews
@@ -67,5 +77,19 @@ private fun AddMemberFormPreview() {
                 onPhoneChange = {},
             )
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun AddMemberDialogPreview() {
+    PreviewSurface {
+        AddMemberDialog(
+            form = MemberFormState(name = "Mushfiqur Rahim", phone = "01700000000"),
+            onNameChange = {},
+            onPhoneChange = {},
+            onSave = {},
+            onDismiss = {},
+        )
     }
 }

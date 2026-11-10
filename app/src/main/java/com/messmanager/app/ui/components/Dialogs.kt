@@ -20,6 +20,7 @@ fun FormDialog(
     title: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     confirmText: String = stringResource(R.string.action_save),
     content: @Composable () -> Unit,
 ) {
@@ -33,6 +34,7 @@ fun FormDialog(
         },
         confirmButton = { AppTextButton(text = confirmText, onClick = onConfirm) },
         dismissButton = { AppTextButton(text = stringResource(R.string.action_cancel), onClick = onDismiss) },
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
     )
 }
@@ -43,6 +45,7 @@ fun ConfirmDialog(
     message: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     confirmText: String = stringResource(R.string.action_delete),
 ) {
     AlertDialog(
@@ -51,6 +54,7 @@ fun ConfirmDialog(
         text = { Text(text = message, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Start) },
         confirmButton = { AppTextButton(text = confirmText, onClick = onConfirm) },
         dismissButton = { AppTextButton(text = stringResource(R.string.action_cancel), onClick = onDismiss) },
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
     )
 }
@@ -64,15 +68,15 @@ private fun DialogsPreview() {
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
         ) {
             FormDialog(
-                title = "Add Item",
+                title = stringResource(R.string.sample_dialog_title),
                 onConfirm = {},
                 onDismiss = {},
             ) {
-                Text("Dialog form content")
+                Text(stringResource(R.string.sample_dialog_content))
             }
             ConfirmDialog(
-                title = "Delete Item?",
-                message = "Are you sure you want to delete this item?",
+                title = stringResource(R.string.sample_delete_title),
+                message = stringResource(R.string.sample_delete_message),
                 onConfirm = {},
                 onDismiss = {},
             )

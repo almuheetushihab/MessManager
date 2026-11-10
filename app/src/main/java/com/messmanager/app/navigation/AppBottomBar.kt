@@ -21,8 +21,12 @@ import com.messmanager.app.core.theme.dimens
 fun AppBottomBar(
     currentDestination: NavDestination?,
     onNavigate: (AppDestination) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+    NavigationBar(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
         bottomNavItems.forEach { item ->
             val selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true
             NavigationBarItem(

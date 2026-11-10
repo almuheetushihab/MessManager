@@ -1,5 +1,7 @@
 package com.messmanager.app.feature.deposit.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -28,11 +30,13 @@ fun AddDepositDialog(
     onMethodChange: (PaymentMethod) -> Unit,
     onSave: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     FormDialog(
         title = stringResource(R.string.deposit_add_title),
         onConfirm = onSave,
         onDismiss = onDismiss,
+        modifier = modifier,
     ) {
         AddDepositForm(
             form = form,
@@ -51,27 +55,33 @@ fun AddDepositForm(
     onMemberChange: (Member) -> Unit,
     onAmountChange: (String) -> Unit,
     onMethodChange: (PaymentMethod) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppDropdownField(
-        label = stringResource(R.string.deposit_member),
-        selectedText = form.member?.name.orEmpty(),
-        options = members.map { it.name to it },
-        onSelected = onMemberChange,
-        errorText = form.memberError?.asString(),
-    )
-    AppTextField(
-        value = form.amount,
-        onValueChange = onAmountChange,
-        label = stringResource(R.string.deposit_amount),
-        keyboardType = KeyboardType.Decimal,
-        errorText = form.amountError?.asString(),
-    )
-    AppDropdownField(
-        label = stringResource(R.string.deposit_method),
-        selectedText = stringResource(form.method.labelRes),
-        options = PaymentMethod.entries.map { stringResource(it.labelRes) to it },
-        onSelected = onMethodChange,
-    )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
+    ) {
+        AppDropdownField(
+            label = stringResource(R.string.deposit_member),
+            selectedText = form.member?.name.orEmpty(),
+            options = members.map { it.name to it },
+            onSelected = onMemberChange,
+            errorText = form.memberError?.asString(),
+        )
+        AppTextField(
+            value = form.amount,
+            onValueChange = onAmountChange,
+            label = stringResource(R.string.deposit_amount),
+            keyboardType = KeyboardType.Decimal,
+            errorText = form.amountError?.asString(),
+        )
+        AppDropdownField(
+            label = stringResource(R.string.deposit_method),
+            selectedText = stringResource(form.method.labelRes),
+            options = PaymentMethod.entries.map { stringResource(it.labelRes) to it },
+            onSelected = onMethodChange,
+        )
+    }
 }
 
 @ThemePreviews
@@ -87,5 +97,21 @@ private fun AddDepositFormPreview() {
                 onMethodChange = {},
             )
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun AddDepositDialogPreview() {
+    PreviewSurface {
+        AddDepositDialog(
+            form = DepositFormState(member = PreviewData.members[0], amount = "1000", method = PaymentMethod.BKASH),
+            members = PreviewData.members,
+            onMemberChange = {},
+            onAmountChange = {},
+            onMethodChange = {},
+            onSave = {},
+            onDismiss = {},
+        )
     }
 }

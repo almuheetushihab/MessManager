@@ -229,7 +229,7 @@ private fun QuickActionButton(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = title,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
             )
@@ -260,13 +260,14 @@ private fun NeedsAttentionSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
                 ) {
+                    val noDueText = stringResource(R.string.home_no_due)
                     Icon(
                         imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = null,
+                        contentDescription = noDueText,
                         tint = MaterialTheme.extraColors.success,
                     )
                     Text(
-                        text = stringResource(R.string.home_no_due),
+                        text = noDueText,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -397,7 +398,7 @@ private fun RecentActivityItem(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = titleText,
             tint = amountColor,
             modifier = Modifier.size(24.dp),
         )

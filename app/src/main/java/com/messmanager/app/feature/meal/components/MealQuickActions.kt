@@ -40,26 +40,28 @@ fun MealQuickActions(
                 MealType.LUNCH -> R.string.meal_all_lunch_on
                 MealType.DINNER -> R.string.meal_all_dinner_on
             }
+            val labelText = stringResource(labelRes)
             AssistChip(
                 onClick = { onAllOn(type) },
                 enabled = enabled,
-                label = { Text(stringResource(labelRes)) },
+                label = { Text(labelText) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.DoneAll,
-                        contentDescription = null,
+                        contentDescription = labelText,
                     )
                 },
             )
         }
+        val copyText = stringResource(R.string.meal_copy_yesterday)
         AssistChip(
             onClick = onCopyYesterday,
             enabled = enabled,
-            label = { Text(stringResource(R.string.meal_copy_yesterday)) },
+            label = { Text(copyText) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Rounded.ContentCopy,
-                    contentDescription = null,
+                    contentDescription = copyText,
                 )
             },
         )

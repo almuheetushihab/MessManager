@@ -1,6 +1,8 @@
 package com.messmanager.app.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -75,6 +77,25 @@ fun MonthPicker(
     }
 }
 
+@Composable
+fun ClosedMonthBanner(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(colorResource(R.color.closed_month_container))
+            .padding(MaterialTheme.dimens.spaceS),
+    ) {
+        Text(
+            text = stringResource(R.string.month_read_only),
+            style = MaterialTheme.typography.labelMedium,
+            color = colorResource(R.color.on_closed_month_container),
+            modifier = Modifier.align(Alignment.Center),
+        )
+    }
+}
+
 @ThemePreviews
 @Composable
 private fun MonthPickerOpenPreview() {
@@ -98,5 +119,13 @@ private fun MonthPickerClosedPreview() {
             onNextMonth = {},
             isClosed = true,
         )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun ClosedMonthBannerPreview() {
+    PreviewSurface {
+        ClosedMonthBanner()
     }
 }

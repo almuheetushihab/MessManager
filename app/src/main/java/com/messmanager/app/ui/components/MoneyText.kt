@@ -5,7 +5,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
@@ -19,12 +22,29 @@ fun formatMoney(amount: Double): String {
     return stringResource(R.string.amount_format, formatted)
 }
 
+@Composable
+fun MoneyText(
+    amount: Double,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+) {
+    Text(
+        text = formatMoney(amount),
+        style = style,
+        color = color,
+        modifier = modifier,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
 @ThemePreviews
 @Composable
-private fun FormatMoneyPreview() {
+private fun MoneyTextPreview() {
     PreviewSurface {
-        Text(
-            text = formatMoney(1250.50),
+        MoneyText(
+            amount = 1250.50,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),

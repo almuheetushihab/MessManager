@@ -144,7 +144,7 @@ fun BazarItem(
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Rounded.CheckCircle,
-                                        contentDescription = null,
+                                        contentDescription = stringResource(R.string.content_desc_settled),
                                         modifier = Modifier.size(AssistChipDefaults.IconSize),
                                     )
                                 },

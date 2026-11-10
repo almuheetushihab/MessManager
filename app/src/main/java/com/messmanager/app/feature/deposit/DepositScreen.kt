@@ -1,41 +1,27 @@
 package com.messmanager.app.feature.deposit
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.messmanager.app.R
@@ -50,6 +36,8 @@ import com.messmanager.app.feature.deposit.components.AddDepositDialog
 import com.messmanager.app.feature.deposit.components.DepositItem
 import com.messmanager.app.ui.components.AddFab
 import com.messmanager.app.ui.components.AppTopBar
+import com.messmanager.app.ui.components.ClosedMonthBanner
+import com.messmanager.app.ui.components.DismissibleItem
 import com.messmanager.app.ui.components.EmptyState
 import com.messmanager.app.ui.components.LoadingState
 import com.messmanager.app.ui.components.MonthPicker
@@ -139,19 +127,7 @@ fun DepositContent(
             )
 
             AnimatedVisibility(visible = state.isMonthClosed) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colorResource(R.color.closed_month_container))
-                        .padding(MaterialTheme.dimens.spaceS),
-                ) {
-                    Text(
-                        text = stringResource(R.string.month_read_only),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = colorResource(R.color.on_closed_month_container),
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
+                ClosedMonthBanner()
             }
 
             when {
@@ -168,54 +144,13 @@ fun DepositContent(
                 ) {
                     items(state.items, key = { it.id }) { deposit ->
                         Box(modifier = Modifier.animateItem()) {
-                            if (!state.isMonthClosed) {
-                                val dismissState = rememberSwipeToDismissBoxState(
-                                    confirmValueChange = { dismissValue ->
-                                        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                                            onDelete(deposit)
-                                            true
-                                        } else {
-                                            false
-                                        }
-                                    },
-                                )
-                                SwipeToDismissBox(
-                                    state = dismissState,
-                                    enableDismissFromStartToEnd = false,
-                                    enableDismissFromEndToStart = true,
-                                    backgroundContent = {
-                                        val color by animateColorAsState(
-                                            if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
-                                                MaterialTheme.colorScheme.errorContainer
-                                            } else {
-                                                Color.Transparent
-                                            },
-                                            label = "backgroundColor",
-                                        )
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(color, shape = MaterialTheme.shapes.medium)
-                                                .padding(horizontal = 16.dp),
-                                            contentAlignment = Alignment.CenterEnd,
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.Delete,
-                                                contentDescription = stringResource(R.string.content_desc_delete),
-                                                tint = MaterialTheme.colorScheme.onErrorContainer,
-                                            )
-                                        }
-                                    },
-                                ) {
-                                    DepositItem(
-                                        deposit = deposit,
-                                        onDelete = { onDelete(deposit) },
-                                    )
-                                }
-                            } else {
+                            DismissibleItem(
+                                isDismissible = !state.isMonthClosed,
+                                onDismiss = { onDelete(deposit) },
+                            ) {
                                 DepositItem(
                                     deposit = deposit,
-                                    onDelete = {},
+                                    onDelete = { if (!state.isMonthClosed) onDelete(deposit) },
                                 )
                             }
                         }

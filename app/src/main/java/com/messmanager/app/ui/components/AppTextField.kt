@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
@@ -76,9 +78,22 @@ private fun AppTextFieldPreviews() {
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
         ) {
-            AppTextField(value = "", onValueChange = {}, label = "Normal Field")
-            AppTextField(value = "Rahim Uddin", onValueChange = {}, label = "Filled Field")
-            AppTextField(value = "-50", onValueChange = {}, label = "Error Field", errorText = "Enter a valid amount")
+            AppTextField(
+                value = "",
+                onValueChange = {},
+                label = stringResource(R.string.sample_normal_field),
+            )
+            AppTextField(
+                value = "Rahim Uddin",
+                onValueChange = {},
+                label = stringResource(R.string.sample_filled_field),
+            )
+            AppTextField(
+                value = "-50",
+                onValueChange = {},
+                label = stringResource(R.string.sample_error_field),
+                errorText = stringResource(R.string.sample_valid_amount_error),
+            )
         }
     }
 }

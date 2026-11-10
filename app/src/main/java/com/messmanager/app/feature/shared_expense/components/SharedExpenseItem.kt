@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.Delete
@@ -16,7 +17,6 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LocalGasStation
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,6 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.messmanager.app.R
+import com.messmanager.app.core.preview.PreviewData
+import com.messmanager.app.core.preview.PreviewSurface
+import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.core.util.formatEpochDay
@@ -83,7 +86,7 @@ fun SharedExpenseItem(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = stringResource(expense.type.labelRes),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp),
             )
@@ -111,7 +114,7 @@ fun SharedExpenseItem(
             IconButton(onClick = { showMenu = true }) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.content_desc_options),
                 )
             }
             DropdownMenu(
@@ -140,5 +143,18 @@ fun SharedExpenseItem(
                 )
             }
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SharedExpenseItemPreview() {
+    PreviewSurface {
+        SharedExpenseItem(
+            expense = PreviewData.sharedExpenses[0],
+            onEdit = {},
+            onDelete = {},
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
     }
 }

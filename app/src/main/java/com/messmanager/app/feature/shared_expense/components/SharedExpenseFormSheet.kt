@@ -40,6 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.messmanager.app.R
+import com.messmanager.app.core.preview.PreviewData
+import com.messmanager.app.core.preview.PreviewSurface
+import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.core.util.formatEpochDay
@@ -327,5 +330,52 @@ fun SharedExpenseFormSheetContent(
         ) {
             DatePicker(state = datePickerState)
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SharedExpenseFormSheetAddPreview() {
+    PreviewSurface {
+        SharedExpenseFormSheetContent(
+            form = SharedExpenseFormState(),
+            members = PreviewData.members,
+            onTitleChange = {},
+            onTypeChange = {},
+            onAmountChange = {},
+            onSplitTypeChange = {},
+            onPaidByMemberChange = {},
+            onDateChange = {},
+            onCustomShareChange = { _, _ -> },
+            onSave = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SharedExpenseFormSheetEditPreview() {
+    PreviewSurface {
+        SharedExpenseFormSheetContent(
+            form = SharedExpenseFormState(
+                id = 1L,
+                title = "Internet Bill",
+                type = SharedExpenseType.WIFI,
+                amountText = "1200",
+                splitType = SplitType.EQUAL,
+                paidByMemberId = PreviewData.members[0].id,
+            ),
+            members = PreviewData.members,
+            onTitleChange = {},
+            onTypeChange = {},
+            onAmountChange = {},
+            onSplitTypeChange = {},
+            onPaidByMemberChange = {},
+            onDateChange = {},
+            onCustomShareChange = { _, _ -> },
+            onSave = {},
+            onDismiss = {},
+        )
     }
 }

@@ -19,9 +19,13 @@ import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
 
 @Composable
-fun AddFab(onClick: () -> Unit) {
+fun AddFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     FloatingActionButton(
         onClick = onClick,
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
@@ -33,8 +37,19 @@ fun AddFab(onClick: () -> Unit) {
 }
 
 @Composable
-fun AppTextButton(text: String, onClick: () -> Unit, enabled: Boolean = true) {
-    TextButton(onClick = onClick, enabled = enabled) { Text(text) }
+fun AppTextButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Text(text)
+    }
 }
 
 @ThemePreviews
@@ -46,7 +61,7 @@ private fun ButtonsPreview() {
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
         ) {
             AddFab(onClick = {})
-            AppTextButton(text = "Save", onClick = {})
+            AppTextButton(text = stringResource(R.string.action_save), onClick = {})
         }
     }
 }

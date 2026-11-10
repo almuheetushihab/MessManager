@@ -75,13 +75,14 @@ fun MemberMealCard(
                 }
             }
             if (isAllMealsOn) {
+                val allOnText = stringResource(R.string.meal_all_meals_on)
                 AssistChip(
                     onClick = {},
-                    label = { Text(stringResource(R.string.meal_all_meals_on)) },
+                    label = { Text(allOnText) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Rounded.CheckCircle,
-                            contentDescription = null,
+                            contentDescription = allOnText,
                         )
                     },
                     colors = AssistChipDefaults.assistChipColors(

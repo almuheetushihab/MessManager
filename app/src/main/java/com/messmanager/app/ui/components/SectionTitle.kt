@@ -5,7 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
@@ -26,6 +28,9 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun SectionTitlePreview() {
     PreviewSurface {
-        SectionTitle(text = "Recent Transactions", modifier = Modifier.padding(MaterialTheme.dimens.spaceM))
+        SectionTitle(
+            text = stringResource(R.string.sample_recent_transactions),
+            modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
+        )
     }
 }

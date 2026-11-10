@@ -13,6 +13,8 @@ import com.messmanager.app.feature.meal.MemberMealUi
 import com.messmanager.app.feature.members.MemberFormState
 import com.messmanager.app.feature.members.MembersUiState
 import com.messmanager.app.feature.report.ReportUiState
+import com.messmanager.app.feature.shared_expense.SharedExpenseFormState
+import com.messmanager.app.feature.shared_expense.SharedExpenseUiState
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -196,4 +198,43 @@ object PreviewData {
     val reportNormal = ReportUiState(isLoading = false, summary = messSummary)
     val reportEmpty = ReportUiState(isLoading = false, summary = MessSummary(members = emptyList()))
     val reportLoading = ReportUiState(isLoading = true)
+
+    // Shared Expense
+    val sharedExpenses = listOf(
+        SharedExpense(
+            id = 1,
+            title = "Gas Bill",
+            type = SharedExpenseType.GAS,
+            amount = 1500.0,
+            splitType = SplitType.EQUAL,
+            epochDay = todayEpoch,
+            paidByMemberId = 1L,
+            paidByMemberName = "Rahim Uddin",
+        ),
+        SharedExpense(
+            id = 2,
+            title = "WiFi Bill",
+            type = SharedExpenseType.WIFI,
+            amount = 800.0,
+            splitType = SplitType.EQUAL,
+            epochDay = todayEpoch - 1,
+            paidByMemberId = null,
+            paidByMemberName = null,
+        ),
+    )
+
+    val sharedExpenseNormal = SharedExpenseUiState(isLoading = false, items = sharedExpenses, members = members, form = null)
+    val sharedExpenseEmpty = SharedExpenseUiState(isLoading = false, items = emptyList(), members = members, form = null)
+    val sharedExpenseLoading = SharedExpenseUiState(isLoading = true)
+    val sharedExpenseForm = SharedExpenseUiState(
+        isLoading = false,
+        items = sharedExpenses,
+        members = members,
+        form = SharedExpenseFormState(
+            title = "Internet Bill",
+            type = SharedExpenseType.WIFI,
+            amountText = "1200",
+            splitType = SplitType.EQUAL,
+        ),
+    )
 }

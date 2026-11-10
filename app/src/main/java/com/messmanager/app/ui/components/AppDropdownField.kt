@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
@@ -79,10 +81,12 @@ fun <T> AppDropdownField(
 @Composable
 private fun AppDropdownFieldPreview() {
     PreviewSurface {
+        val groceryText = stringResource(R.string.category_grocery)
+        val fishMeatText = stringResource(R.string.category_fish_meat)
         AppDropdownField(
-            label = "Category",
-            selectedText = "Grocery",
-            options = listOf("Grocery" to 1, "Fish & Meat" to 2),
+            label = stringResource(R.string.sample_category),
+            selectedText = groceryText,
+            options = listOf(groceryText to 1, fishMeatText to 2),
             onSelected = {},
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
         )

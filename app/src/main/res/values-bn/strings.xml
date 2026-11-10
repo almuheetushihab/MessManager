@@ -260,5 +260,21 @@
     <string name="settings_import_success">ডাটাবেস সফলভাবে রিস্টোর করা হয়েছে।</string>
     <string name="settings_import_failed">রিস্টোর ব্যর্থ হয়েছে: %1$s</string>
     <string name="content_desc_settings">সেটিংস</string>
+    <string name="content_desc_settled">পরিশোধিত</string>
+    <string name="content_desc_options">আরও অপশন</string>
+    <string name="content_desc_avatar">%1$s এর অ্যাভাটার</string>
+    <string name="sample_card_content">স্যাম্পল কার্ড কনটেন্ট</string>
+    <string name="sample_dialog_content">ডায়ালগ ফর্ম কনটেন্ট</string>
+    <string name="sample_dialog_title">আইটেম যুক্ত করুন</string>
+    <string name="sample_delete_title">আইটেম মুছবেন?</string>
+    <string name="sample_delete_message">আপনি কি নিশ্চিত যে এই আইটেমটি মুছতে চান?</string>
+    <string name="sample_recent_transactions">সাম্প্রতিক লেনদেন</string>
+    <string name="sample_total_bazar">মোট বাজার</string>
+    <string name="sample_no_items">কোনো আইটেম পাওয়া যায়নি।</string>
+    <string name="sample_normal_field">সাধারণ ফিল্ড</string>
+    <string name="sample_filled_field">পূরণকৃত ফিল্ড</string>
+    <string name="sample_error_field">ত্রুটিযুক্ত ফিল্ড</string>
+    <string name="sample_valid_amount_error">সঠিক পরিমাণ লিখুন</string>
+    <string name="sample_category">ক্যাটাগরি</string>
     <string name="error_database_operation">ডাটাবেস কার্যক্রমে ত্রুটি ঘটেছে। পুনরায় চেষ্টা করুন।</string>
 </resources>

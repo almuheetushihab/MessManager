@@ -329,9 +329,10 @@ private fun ThemeOptionRow(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .selectable(
                 selected = selected,

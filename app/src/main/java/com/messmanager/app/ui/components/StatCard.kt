@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
@@ -36,7 +38,7 @@ fun StatCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = title,
                 tint = MaterialTheme.colorScheme.primary,
             )
             Text(
@@ -62,8 +64,8 @@ fun StatCard(
 private fun StatCardPreview() {
     PreviewSurface {
         StatCard(
-            title = "Total Bazar",
-            value = "৳ 3,150.00",
+            title = stringResource(R.string.sample_total_bazar),
+            value = formatMoney(3150.0),
             icon = Icons.Rounded.LocalGroceryStore,
             modifier = Modifier.padding(MaterialTheme.dimens.spaceM),
         )
