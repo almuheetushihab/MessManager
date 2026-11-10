@@ -6,6 +6,8 @@ import com.messmanager.app.R
 import com.messmanager.app.core.util.UiText
 import com.messmanager.app.domain.model.Bazar
 import com.messmanager.app.domain.model.BazarCategory
+import com.messmanager.app.domain.model.BazarUnit
+import com.messmanager.app.domain.model.PaymentType
 import com.messmanager.app.domain.repository.MessRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,16 +26,82 @@ class BazarViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val form = MutableStateFlow<BazarFormState?>(null)
+    private val recentlyDeleted = MutableStateFlow<Bazar?>(null)
 
-    val uiState: StateFlow<BazarUiState> = combine(repository.observeBazar(), form) { items, form ->
-        BazarUiState(isLoading = false, items = items, form = form)
+    val uiState: StateFlow<BazarUiState> = combine(
+        repository.observeBazar(),
+        repository.observeMembers(),
+        form,
+        recentlyDeleted,
+    ) { items, members, form, deleted ->
+        BazarUiState(
+            isLoading = false,
+            items = items,
+            members = members,
+            form = form,
+            recentlyDeletedBazar = deleted,
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BazarUiState())
 
-    fun onAddClick() = form.update { BazarFormState() }
+    fun onAddClick() = form.update {
+        val cat = BazarCategory.GROCERY
+        BazarFormState(
+            category = cat,
+            unit = cat.defaultUnit,
+            allowedUnits = cat.allowedUnits,
+        )
+    }
+
+    fun onEditClick(bazar: Bazar) = form.update {
+        val cat = bazar.category
+        val allowed = cat.allowedUnits
+        val unit = bazar.unit ?: cat.defaultUnit
+        BazarFormState(
+            id = bazar.id,
+            amount = if (bazar.amount % 1.0 == 0.0) bazar.amount.toLong().toString() else bazar.amount.toString(),
+            quantity = bazar.quantity?.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() } ?: "",
+            category = cat,
+            unit = if (allowed.contains(unit)) unit else cat.defaultUnit,
+            allowedUnits = allowed,
+            paymentType = bazar.paymentType,
+            creditShopName = bazar.creditShopName,
+            paidByMemberId = bazar.paidByMemberId,
+            dateEpochDay = bazar.epochDay,
+            note = bazar.note,
+        )
+    }
+
     fun onDismissForm() = form.update { null }
+
     fun onAmountChange(value: String) = form.update { it?.copy(amount = value, amountError = null) }
+
+    fun onQuickAmountClick(chipAmount: Int) = form.update { it?.copy(amount = chipAmount.toString(), amountError = null) }
+
+    fun onQuantityChange(value: String) = form.update { it?.copy(quantity = value) }
+
+    fun onCategoryChange(value: BazarCategory) = form.update { state ->
+        state?.let {
+            val allowed = value.allowedUnits
+            val selectedUnit = if (allowed.contains(it.unit)) it.unit else value.defaultUnit
+            it.copy(
+                category = value,
+                allowedUnits = allowed,
+                unit = selectedUnit,
+            )
+        }
+    }
+
+    fun onUnitChange(value: BazarUnit) = form.update { it?.copy(unit = value) }
+
+    fun onPaymentTypeChange(value: PaymentType) = form.update { it?.copy(paymentType = value, shopNameError = null) }
+
+    fun onCreditShopNameChange(value: String) = form.update { it?.copy(creditShopName = value, shopNameError = null) }
+
+    fun onPaidByMemberChange(memberId: Long?) = form.update { it?.copy(paidByMemberId = memberId) }
+
+    fun onDateChange(epochDay: Long) = form.update { it?.copy(dateEpochDay = epochDay) }
+
     fun onNoteChange(value: String) = form.update { it?.copy(note = value) }
-    fun onCategoryChange(value: BazarCategory) = form.update { it?.copy(category = value) }
 
     fun onSave() {
         val current = form.value ?: return
@@ -42,21 +110,62 @@ class BazarViewModel @Inject constructor(
             form.update { it?.copy(amountError = UiText.Resource(R.string.error_invalid_amount)) }
             return
         }
+
+        if (current.paymentType == PaymentType.CREDIT && current.creditShopName.trim().isEmpty()) {
+            form.update { it?.copy(shopNameError = UiText.Resource(R.string.error_shop_name_required)) }
+            return
+        }
+
+        val quantity = current.quantity.toDoubleOrNull()
+
         viewModelScope.launch {
-            repository.addBazar(
-                Bazar(
-                    epochDay = LocalDate.now().toEpochDay(),
-                    amount = amount,
-                    category = current.category,
-                    note = current.note.trim(),
-                ),
+            val item = Bazar(
+                id = current.id,
+                epochDay = current.dateEpochDay,
+                amount = amount,
+                category = current.category,
+                quantity = quantity,
+                unit = current.unit,
+                paymentType = current.paymentType,
+                creditShopName = current.creditShopName.trim(),
+                isCreditSettled = if (current.paymentType == PaymentType.CASH) false else false, // retains existing status if editing
+                paidByMemberId = current.paidByMemberId,
+                note = current.note.trim(),
             )
+
+            if (current.isEditMode) {
+                // preserve isCreditSettled when editing
+                val existing = uiState.value.items.find { it.id == current.id }
+                val updatedItem = item.copy(isCreditSettled = existing?.isCreditSettled ?: false)
+                repository.updateBazar(updatedItem)
+            } else {
+                repository.addBazar(item)
+            }
             form.update { null }
         }
     }
 
+    fun onMarkAsPaid(bazar: Bazar) {
+        viewModelScope.launch {
+            repository.updateBazarCreditSettled(bazar.id, true)
+        }
+    }
+
     fun onDelete(bazar: Bazar) {
+        recentlyDeleted.value = bazar
         viewModelScope.launch { repository.deleteBazar(bazar.id) }
+    }
+
+    fun onUndoDelete() {
+        val bazarToRestore = recentlyDeleted.value ?: return
+        viewModelScope.launch {
+            repository.addBazar(bazarToRestore)
+            recentlyDeleted.value = null
+        }
+    }
+
+    fun onClearUndo() {
+        recentlyDeleted.value = null
     }
 
     private companion object {

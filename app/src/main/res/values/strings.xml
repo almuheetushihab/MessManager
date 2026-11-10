@@ -8,7 +8,9 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_back">Back</string>
-    <string name="amount_format">৳ %1$.2f</string>
+    <string name="action_undo">Undo</string>
+    <string name="amount_format">৳ %1$s</string>
+    <string name="quick_amount_format">৳%1$d</string>
     <string name="content_desc_add">Add new item</string>
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_previous_day">Previous day</string>
@@ -30,6 +32,7 @@
     <string name="home_total_bazar">Total bazar</string>
     <string name="home_total_meals">Total meals</string>
     <string name="home_today_meals">Today\'s meals</string>
+    <string name="home_outstanding_baki">Outstanding Baki</string>
     <string name="home_members_count">%1$d members in this mess</string>
 
     <!-- Meal -->
@@ -43,11 +46,47 @@
 
     <!-- Bazar -->
     <string name="bazar_title">Bazar</string>
-    <string name="bazar_add_title">Add bazar</string>
+    <string name="bazar_add_title">Add Bazar</string>
+    <string name="bazar_edit_title">Edit Bazar</string>
     <string name="bazar_amount">Amount</string>
+    <string name="bazar_quantity">Quantity</string>
+    <string name="bazar_unit">Unit</string>
+    <string name="bazar_payment_type">Payment Type</string>
+    <string name="bazar_credit_shop_name">Shop Name</string>
+    <string name="bazar_paid_by">Paid By</string>
+    <string name="bazar_paid_by_mess_fund">Mess Fund</string>
+    <string name="bazar_paid_by_helper">Leave empty if paid from mess fund</string>
+    <string name="bazar_date">Date</string>
     <string name="bazar_note">Note (optional)</string>
     <string name="bazar_category">Category</string>
     <string name="bazar_empty">No bazar added yet.</string>
+    <string name="bazar_mark_as_paid">Mark as paid</string>
+    <string name="bazar_settled">Settled</string>
+    <string name="bazar_outstanding_baki">Outstanding Baki</string>
+    <string name="bazar_paid_by_member">Paid by %1$s</string>
+    <string name="bazar_deleted_msg">Bazar entry deleted</string>
+
+    <!-- Units -->
+    <string name="unit_gram">Gram</string>
+    <string name="unit_gram_symbol">g</string>
+    <string name="unit_kg">Kilogram</string>
+    <string name="unit_kg_symbol">kg</string>
+    <string name="unit_liter">Liter</string>
+    <string name="unit_liter_symbol">L</string>
+    <string name="unit_ml">Milliliter</string>
+    <string name="unit_ml_symbol">ml</string>
+    <string name="unit_piece">Piece</string>
+    <string name="unit_piece_symbol">pc</string>
+    <string name="unit_dozen">Dozen</string>
+    <string name="unit_dozen_symbol">dz</string>
+    <string name="unit_packet">Packet</string>
+    <string name="unit_packet_symbol">pkt</string>
+
+    <!-- Payment Types -->
+    <string name="payment_type_cash">Cash</string>
+    <string name="payment_type_baki">Baki (Credit)</string>
+
+    <!-- Categories -->
     <string name="category_fish_meat">Fish &amp; Meat</string>
     <string name="category_vegetable">Vegetable</string>
     <string name="category_grocery">Grocery</string>
@@ -80,12 +119,14 @@
     <string name="report_meals">Meals: %1$d</string>
     <string name="report_meal_cost">Meal cost</string>
     <string name="report_deposit">Deposit</string>
+    <string name="report_paid_by_total">Bazar paid</string>
     <string name="report_balance_receivable">Will get back</string>
     <string name="report_balance_payable">Needs to pay</string>
     <string name="report_empty">No data for this month yet.</string>
 
     <!-- Errors -->
     <string name="error_invalid_amount">Enter a valid amount greater than zero.</string>
+    <string name="error_shop_name_required">Shop name is required for Baki.</string>
     <string name="error_name_required">Name is required.</string>
     <string name="error_member_required">Select a member.</string>
 </resources>

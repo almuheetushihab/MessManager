@@ -29,8 +29,20 @@ fun <T> AppDropdownField(
     onSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
     errorText: String? = null,
+    helperText: String? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    val supportingTextContent: @Composable (() -> Unit)? = when {
+        errorText != null -> {
+            { Text(errorText) }
+        }
+        helperText != null -> {
+            { Text(helperText, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
+        else -> null
+    }
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
@@ -42,7 +54,7 @@ fun <T> AppDropdownField(
             readOnly = true,
             label = { Text(label) },
             isError = errorText != null,
-            supportingText = errorText?.let { { Text(it) } },
+            supportingText = supportingTextContent,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = MaterialTheme.shapes.small,
             modifier = Modifier

@@ -10,9 +10,12 @@ import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
+import java.text.DecimalFormat
+
+private val moneyFormat = DecimalFormat("#,##0.00")
 
 @Composable
-fun formatMoney(amount: Double): String = stringResource(R.string.amount_format, amount)
+fun formatMoney(amount: Double): String = stringResource(R.string.amount_format, moneyFormat.format(amount))
 
 @ThemePreviews
 @Composable

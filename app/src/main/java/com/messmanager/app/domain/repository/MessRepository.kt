@@ -17,6 +17,8 @@ interface MessRepository {
 
     fun observeBazar(): Flow<List<Bazar>>
     suspend fun addBazar(bazar: Bazar)
+    suspend fun updateBazar(bazar: Bazar)
+    suspend fun updateBazarCreditSettled(id: Long, isSettled: Boolean)
     suspend fun deleteBazar(id: Long)
 
     fun observeDeposits(): Flow<List<Deposit>>

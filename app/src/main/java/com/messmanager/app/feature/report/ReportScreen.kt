@@ -1,7 +1,10 @@
 package com.messmanager.app.feature.report
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,9 +27,11 @@ import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.util.formatMonthYear
 import com.messmanager.app.feature.report.components.MemberBalanceCard
+import com.messmanager.app.ui.components.AppCard
 import com.messmanager.app.ui.components.AppTopBar
 import com.messmanager.app.ui.components.EmptyState
 import com.messmanager.app.ui.components.LoadingState
+import com.messmanager.app.ui.components.formatMoney
 
 @Composable
 fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
@@ -52,11 +58,32 @@ fun ReportContent(state: ReportUiState) {
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
             ) {
                 item {
-                    Text(
-                        text = state.summary.month.formatMonthYear(),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS)) {
+                        Text(
+                            text = state.summary.month.formatMonthYear(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                        if (state.summary.totalOutstandingBaki > 0.0) {
+                            AppCard {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.bazar_outstanding_baki),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    Text(
+                                        text = formatMoney(state.summary.totalOutstandingBaki),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
                 items(state.summary.members, key = { it.member.id }) { summary ->
                     MemberBalanceCard(summary = summary)

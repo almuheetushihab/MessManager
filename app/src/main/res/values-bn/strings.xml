@@ -2,12 +2,15 @@
 <resources>
     <string name="app_name">মেস ম্যানেজার</string>
 
+    <!-- Common -->
     <string name="action_add">যোগ করুন</string>
     <string name="action_save">সংরক্ষণ</string>
     <string name="action_cancel">বাতিল</string>
     <string name="action_delete">মুছুন</string>
     <string name="action_back">ফিরে যান</string>
-    <string name="amount_format">৳ %1$.2f</string>
+    <string name="action_undo">আনডু</string>
+    <string name="amount_format">৳ %1$s</string>
+    <string name="quick_amount_format">৳%1$d</string>
     <string name="content_desc_add">নতুন যোগ করুন</string>
     <string name="content_desc_delete">মুছুন</string>
     <string name="content_desc_previous_day">আগের দিন</string>
@@ -15,20 +18,24 @@
     <string name="content_desc_increase">বাড়ান</string>
     <string name="content_desc_decrease">কমান</string>
 
+    <!-- Navigation -->
     <string name="nav_home">হোম</string>
     <string name="nav_meal">মিল</string>
     <string name="nav_bazar">বাজার</string>
     <string name="nav_deposit">জমা</string>
     <string name="nav_report">রিপোর্ট</string>
 
+    <!-- Home -->
     <string name="home_title">মেস ম্যানেজার</string>
     <string name="home_month_summary">%1$s এর সারসংক্ষেপ</string>
     <string name="home_meal_rate">মিল রেট</string>
     <string name="home_total_bazar">মোট বাজার</string>
     <string name="home_total_meals">মোট মিল</string>
     <string name="home_today_meals">আজকের মিল</string>
+    <string name="home_outstanding_baki">মোট বাকী</string>
     <string name="home_members_count">এই মেসে %1$d জন সদস্য আছেন</string>
 
+    <!-- Meal -->
     <string name="meal_title">দৈনিক মিল</string>
     <string name="meal_breakfast">সকাল</string>
     <string name="meal_lunch">দুপুর</string>
@@ -37,18 +44,56 @@
     <string name="meal_total_for_day">আজকের মোট: %1$d</string>
     <string name="meal_empty">মিল ট্র্যাক করতে আগে সদস্য যোগ করুন।</string>
 
+    <!-- Bazar -->
     <string name="bazar_title">বাজার</string>
     <string name="bazar_add_title">বাজার যোগ করুন</string>
+    <string name="bazar_edit_title">বাজার এডিট করুন</string>
     <string name="bazar_amount">টাকার পরিমাণ</string>
+    <string name="bazar_quantity">পরিমাণ</string>
+    <string name="bazar_unit">একক</string>
+    <string name="bazar_payment_type">পেমেন্টের ধরণ</string>
+    <string name="bazar_credit_shop_name">দোকানের নাম</string>
+    <string name="bazar_paid_by">পরিশোধ করেছেন</string>
+    <string name="bazar_paid_by_mess_fund">মেস ফান্ড</string>
+    <string name="bazar_paid_by_helper">মেস ফান্ড থেকে দেওয়া হলে ফাঁকা রাখুন</string>
+    <string name="bazar_date">তারিখ</string>
     <string name="bazar_note">নোট (ঐচ্ছিক)</string>
     <string name="bazar_category">ক্যাটাগরি</string>
     <string name="bazar_empty">এখনো কোনো বাজার যোগ করা হয়নি।</string>
+    <string name="bazar_mark_as_paid">পরিশোধ চিহ্নিত করুন</string>
+    <string name="bazar_settled">পরিশোধিত</string>
+    <string name="bazar_outstanding_baki">মোট বাকী</string>
+    <string name="bazar_paid_by_member">পরিশোধ: %1$s</string>
+    <string name="bazar_deleted_msg">বাজার এন্ট্রি মুছে ফেলা হয়েছে</string>
+
+    <!-- Units -->
+    <string name="unit_gram">গ্রাম</string>
+    <string name="unit_gram_symbol">গ্রাম</string>
+    <string name="unit_kg">কেজি</string>
+    <string name="unit_kg_symbol">কেজি</string>
+    <string name="unit_liter">লিটার</string>
+    <string name="unit_liter_symbol">লি:</string>
+    <string name="unit_ml">মিলি</string>
+    <string name="unit_ml_symbol">মিলি</string>
+    <string name="unit_piece">পিস</string>
+    <string name="unit_piece_symbol">পিস</string>
+    <string name="unit_dozen">ডজন</string>
+    <string name="unit_dozen_symbol">ডজন</string>
+    <string name="unit_packet">প্যাকেট</string>
+    <string name="unit_packet_symbol">প্যাকেট</string>
+
+    <!-- Payment Types -->
+    <string name="payment_type_cash">ক্যাশ</string>
+    <string name="payment_type_baki">বাকী (ক্রেডিট)</string>
+
+    <!-- Categories -->
     <string name="category_fish_meat">মাছ ও মাংস</string>
     <string name="category_vegetable">সবজি</string>
     <string name="category_grocery">মুদি</string>
     <string name="category_gas">গ্যাস</string>
     <string name="category_other">অন্যান্য</string>
 
+    <!-- Deposit -->
     <string name="deposit_title">জমা</string>
     <string name="deposit_add_title">জমা যোগ করুন</string>
     <string name="deposit_member">সদস্য</string>
@@ -60,6 +105,7 @@
     <string name="method_nagad">নগদ</string>
     <string name="method_bank">ব্যাংক</string>
 
+    <!-- Members -->
     <string name="members_title">সদস্য</string>
     <string name="members_add_title">সদস্য যোগ করুন</string>
     <string name="members_name">পুরো নাম</string>
@@ -68,15 +114,19 @@
     <string name="members_delete_title">সদস্য মুছবেন?</string>
     <string name="members_delete_message">%1$s এবং তার সব মিল ও জমার হিসাব মুছে যাবে।</string>
 
+    <!-- Report -->
     <string name="report_title">মাসিক রিপোর্ট</string>
     <string name="report_meals">মিল: %1$d</string>
     <string name="report_meal_cost">মিলের খরচ</string>
     <string name="report_deposit">জমা</string>
+    <string name="report_paid_by_total">বাজার পরিশোধ</string>
     <string name="report_balance_receivable">ফেরত পাবেন</string>
     <string name="report_balance_payable">দিতে হবে</string>
     <string name="report_empty">এই মাসের কোনো তথ্য নেই।</string>
 
+    <!-- Errors -->
     <string name="error_invalid_amount">০ এর বেশি সঠিক পরিমাণ দিন।</string>
+    <string name="error_shop_name_required">বাকীর জন্য দোকানের নাম আবশ্যক।</string>
     <string name="error_name_required">নাম দিতে হবে।</string>
     <string name="error_member_required">একজন সদস্য নির্বাচন করুন।</string>
 </resources>

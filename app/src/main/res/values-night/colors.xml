@@ -19,4 +19,8 @@
     <color name="on_error">#690005</color>
     <color name="success">#7ED6AE</color>
     <color name="warning">#FFB95C</color>
+    <color name="baki_container">#4A2800</color>
+    <color name="on_baki_container">#FFD180</color>
+    <color name="baki_settled_container">#003814</color>
+    <color name="on_baki_settled_container">#A5D6A7</color>
 </resources>

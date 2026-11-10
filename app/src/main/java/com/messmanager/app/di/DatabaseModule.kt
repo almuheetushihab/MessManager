@@ -2,6 +2,7 @@ package com.messmanager.app.di
 
 import android.content.Context
 import androidx.room.Room
+import com.messmanager.app.data.local.MIGRATION_1_2
 import com.messmanager.app.data.local.MessDatabase
 import com.messmanager.app.data.local.dao.BazarDao
 import com.messmanager.app.data.local.dao.DepositDao
@@ -21,7 +22,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MessDatabase =
-        Room.databaseBuilder(context, MessDatabase::class.java, MessDatabase.NAME).build()
+        Room.databaseBuilder(context, MessDatabase::class.java, MessDatabase.NAME)
+            .addMigrations(MIGRATION_1_2)
+            .build()
 
     @Provides fun provideMemberDao(db: MessDatabase): MemberDao = db.memberDao()
     @Provides fun provideMealDao(db: MessDatabase): MealDao = db.mealDao()

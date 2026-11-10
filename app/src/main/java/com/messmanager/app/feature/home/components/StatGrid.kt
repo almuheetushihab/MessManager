@@ -1,8 +1,8 @@
 package com.messmanager.app.feature.home.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AttachMoney
+import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.LocalGroceryStore
 import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.material.icons.rounded.Today
@@ -63,6 +64,19 @@ fun StatGrid(state: HomeUiState, modifier: Modifier = Modifier) {
                 icon = Icons.Rounded.Today,
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
+        }
+        if (state.summary.totalOutstandingBaki > 0.0) {
+            Row(
+                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                horizontalArrangement = Arrangement.spacedBy(gap),
+            ) {
+                StatCard(
+                    title = stringResource(R.string.home_outstanding_baki),
+                    value = formatMoney(state.summary.totalOutstandingBaki),
+                    icon = Icons.Rounded.CreditCard,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+            }
         }
     }
 }

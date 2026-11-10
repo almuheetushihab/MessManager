@@ -41,9 +41,19 @@ class MessRepositoryImpl @Inject constructor(
     override suspend fun saveMeal(entry: MealEntry) = mealDao.upsert(entry.toEntity())
 
     override fun observeBazar(): Flow<List<Bazar>> =
-        bazarDao.observeAll().map { list -> list.map { it.toDomain() } }
+        combine(bazarDao.observeAll(), memberDao.observeAll()) { bazars, members ->
+            val memberNames = members.associate { it.id to it.name }
+            bazars.map { entity ->
+                entity.toDomain(paidByMemberName = entity.paidByMemberId?.let { memberNames[it] })
+            }
+        }
 
     override suspend fun addBazar(bazar: Bazar) = bazarDao.insert(bazar.toEntity())
+
+    override suspend fun updateBazar(bazar: Bazar) = bazarDao.update(bazar.toEntity())
+
+    override suspend fun updateBazarCreditSettled(id: Long, isSettled: Boolean) =
+        bazarDao.updateCreditSettled(id, isSettled)
 
     override suspend fun deleteBazar(id: Long) = bazarDao.deleteById(id)
 

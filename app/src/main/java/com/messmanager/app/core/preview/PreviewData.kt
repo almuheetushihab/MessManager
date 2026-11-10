@@ -43,12 +43,76 @@ object PreviewData {
     }
 
     val bazarItems = listOf(
-        Bazar(id = 1, epochDay = todayEpoch, amount = 650.0, category = BazarCategory.FISH_MEAT, note = "Hilsa fish"),
-        Bazar(id = 2, epochDay = todayEpoch - 1, amount = 250.0, category = BazarCategory.VEGETABLE, note = "Potatoes & Onions"),
-        Bazar(id = 3, epochDay = todayEpoch - 2, amount = 400.0, category = BazarCategory.GROCERY, note = "Rice and oil"),
-        Bazar(id = 4, epochDay = todayEpoch - 3, amount = 1200.0, category = BazarCategory.GAS, note = "LPG Cylinder"),
-        Bazar(id = 5, epochDay = todayEpoch - 4, amount = 150.0, category = BazarCategory.OTHER, note = "Soap & detergent"),
-        Bazar(id = 6, epochDay = todayEpoch - 5, amount = 500.0, category = BazarCategory.FISH_MEAT, note = "Chicken"),
+        Bazar(
+            id = 1,
+            epochDay = todayEpoch,
+            amount = 650.0,
+            category = BazarCategory.FISH_MEAT,
+            quantity = 1.5,
+            unit = BazarUnit.KG,
+            paymentType = PaymentType.CASH,
+            paidByMemberId = 1L,
+            paidByMemberName = "Rahim Uddin",
+            note = "Hilsa fish",
+        ),
+        Bazar(
+            id = 2,
+            epochDay = todayEpoch - 1,
+            amount = 250.0,
+            category = BazarCategory.VEGETABLE,
+            quantity = 3.0,
+            unit = BazarUnit.KG,
+            paymentType = PaymentType.CREDIT,
+            creditShopName = "Desh General Store",
+            isCreditSettled = false,
+            note = "Potatoes & Onions",
+        ),
+        Bazar(
+            id = 3,
+            epochDay = todayEpoch - 2,
+            amount = 400.0,
+            category = BazarCategory.GROCERY,
+            quantity = 5.0,
+            unit = BazarUnit.KG,
+            paymentType = PaymentType.CASH,
+            paidByMemberId = 2L,
+            paidByMemberName = "Karim Ahmed",
+            note = "Rice and oil",
+        ),
+        Bazar(
+            id = 4,
+            epochDay = todayEpoch - 3,
+            amount = 1200.0,
+            category = BazarCategory.GAS,
+            quantity = 1.0,
+            unit = BazarUnit.PIECE,
+            paymentType = PaymentType.CREDIT,
+            creditShopName = "Bhai Bhai Gas Store",
+            isCreditSettled = true,
+            note = "LPG Cylinder",
+        ),
+        Bazar(
+            id = 5,
+            epochDay = todayEpoch - 4,
+            amount = 150.0,
+            category = BazarCategory.OTHER,
+            quantity = 2.0,
+            unit = BazarUnit.PACKET,
+            paymentType = PaymentType.CASH,
+            note = "Soap & detergent",
+        ),
+        Bazar(
+            id = 6,
+            epochDay = todayEpoch - 5,
+            amount = 500.0,
+            category = BazarCategory.FISH_MEAT,
+            quantity = 2.0,
+            unit = BazarUnit.KG,
+            paymentType = PaymentType.CASH,
+            paidByMemberId = 1L,
+            paidByMemberName = "Rahim Uddin",
+            note = "Chicken",
+        ),
     )
 
     val depositItems = listOf(
@@ -61,8 +125,8 @@ object PreviewData {
     )
 
     val memberSummaries = listOf(
-        MemberSummary(member = members[0], meals = 10, mealCost = 900.0, deposit = 3500.0), // balance: +2600
-        MemberSummary(member = members[1], meals = 8, mealCost = 720.0, deposit = 2500.0),  // balance: +1780
+        MemberSummary(member = members[0], meals = 10, mealCost = 900.0, deposit = 3500.0, paidByTotal = 1150.0), // balance: 3500 + 1150 - 900 = +3750
+        MemberSummary(member = members[1], meals = 8, mealCost = 720.0, deposit = 2500.0, paidByTotal = 400.0),  // balance: 2500 + 400 - 720 = +2180
         MemberSummary(member = members[2], meals = 9, mealCost = 810.0, deposit = 2000.0),  // balance: +1190
         MemberSummary(member = members[3], meals = 6, mealCost = 540.0, deposit = 1500.0),  // balance: +960
         MemberSummary(member = members[4], meals = 2, mealCost = 180.0, deposit = 100.0),   // balance: -80 (negative!)
@@ -73,6 +137,7 @@ object PreviewData {
         totalBazar = 3150.0,
         totalMeals = 35,
         mealRate = 90.0,
+        totalOutstandingBaki = 250.0,
         members = memberSummaries,
     )
 
@@ -86,11 +151,30 @@ object PreviewData {
     val mealLoading = MealUiState(isLoading = true)
 
     // Bazar UiStates
-    val bazarNormal = BazarUiState(isLoading = false, items = bazarItems, form = null)
-    val bazarEmpty = BazarUiState(isLoading = false, items = emptyList(), form = null)
+    val bazarNormal = BazarUiState(isLoading = false, items = bazarItems, members = members, form = null)
+    val bazarEmpty = BazarUiState(isLoading = false, items = emptyList(), members = members, form = null)
     val bazarLoading = BazarUiState(isLoading = true)
-    val bazarForm = BazarUiState(isLoading = false, items = bazarItems, form = BazarFormState(amount = "500", note = "Fresh vegetables", category = BazarCategory.VEGETABLE))
-    val bazarError = BazarUiState(isLoading = false, items = bazarItems, form = BazarFormState(amount = "-10", amountError = UiText.Resource(R.string.error_invalid_amount)))
+    val bazarForm = BazarUiState(
+        isLoading = false,
+        items = bazarItems,
+        members = members,
+        form = BazarFormState(
+            amount = "500",
+            quantity = "2.5",
+            category = BazarCategory.VEGETABLE,
+            unit = BazarUnit.KG,
+            note = "Fresh vegetables",
+        ),
+    )
+    val bazarError = BazarUiState(
+        isLoading = false,
+        items = bazarItems,
+        members = members,
+        form = BazarFormState(
+            amount = "-10",
+            amountError = UiText.Resource(R.string.error_invalid_amount),
+        ),
+    )
 
     // Deposit UiStates
     val depositNormal = DepositUiState(isLoading = false, items = depositItems, members = members, form = null)

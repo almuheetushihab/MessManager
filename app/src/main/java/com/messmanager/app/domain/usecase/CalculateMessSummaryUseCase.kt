@@ -4,9 +4,10 @@ import com.messmanager.app.core.util.epochRange
 import com.messmanager.app.domain.model.Bazar
 import com.messmanager.app.domain.model.Deposit
 import com.messmanager.app.domain.model.MealEntry
-import com.messmanager.app.domain.model.MemberSummary
 import com.messmanager.app.domain.model.Member
+import com.messmanager.app.domain.model.MemberSummary
 import com.messmanager.app.domain.model.MessSummary
+import com.messmanager.app.domain.model.PaymentType
 import com.messmanager.app.domain.repository.MessRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 /**
  * meal rate = total bazar / total meals
- * member balance = deposit - (member meals * meal rate)
+ * member balance = deposit + paidByTotal - (member meals * meal rate)
  */
 class CalculateMessSummaryUseCase @Inject constructor(
     private val repository: MessRepository,
@@ -41,10 +42,17 @@ class CalculateMessSummaryUseCase @Inject constructor(
     ): MessSummary {
         val mealsByMember = meals.groupBy { it.memberId }.mapValues { (_, list) -> list.sumOf { it.totalCount } }
         val depositByMember = deposits.groupBy { it.memberId }.mapValues { (_, list) -> list.sumOf { it.amount } }
+        val paidByMember = bazar.filter { it.paidByMemberId != null }
+            .groupBy { it.paidByMemberId!! }
+            .mapValues { (_, list) -> list.sumOf { it.amount } }
 
         val totalMeals = members.sumOf { mealsByMember[it.id] ?: 0 }
         val totalBazar = bazar.sumOf { it.amount }
         val mealRate = if (totalMeals > 0) totalBazar / totalMeals else 0.0
+
+        val totalOutstandingBaki = bazar
+            .filter { it.paymentType == PaymentType.CREDIT && !it.isCreditSettled }
+            .sumOf { it.amount }
 
         val summaries = members.map { member ->
             val memberMeals = mealsByMember[member.id] ?: 0
@@ -53,6 +61,7 @@ class CalculateMessSummaryUseCase @Inject constructor(
                 meals = memberMeals,
                 mealCost = memberMeals * mealRate,
                 deposit = depositByMember[member.id] ?: 0.0,
+                paidByTotal = paidByMember[member.id] ?: 0.0,
             )
         }
         return MessSummary(
@@ -60,6 +69,7 @@ class CalculateMessSummaryUseCase @Inject constructor(
             totalBazar = totalBazar,
             totalMeals = totalMeals,
             mealRate = mealRate,
+            totalOutstandingBaki = totalOutstandingBaki,
             members = summaries,
         )
     }
