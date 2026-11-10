@@ -51,6 +51,11 @@ class BazarViewModelTest {
         override fun observeDeposits() = error("Not needed")
         override suspend fun addDeposit(deposit: com.messmanager.app.domain.model.Deposit) {}
         override suspend fun deleteDeposit(id: Long) {}
+        override fun observeSharedExpenses(): Flow<List<com.messmanager.app.domain.model.SharedExpense>> = flowOf(emptyList())
+        override fun observeSharedExpensesBetween(start: Long, end: Long): Flow<List<com.messmanager.app.domain.model.SharedExpense>> = flowOf(emptyList())
+        override suspend fun addSharedExpense(expense: com.messmanager.app.domain.model.SharedExpense) {}
+        override suspend fun updateSharedExpense(expense: com.messmanager.app.domain.model.SharedExpense) {}
+        override suspend fun deleteSharedExpense(id: Long) {}
         override fun observeClosedMonths(): Flow<List<YearMonth>> = flowOf(emptyList())
         override fun observeIsMonthClosed(month: YearMonth): Flow<Boolean> = flowOf(false)
         override suspend fun closeMonth(month: YearMonth) {}
