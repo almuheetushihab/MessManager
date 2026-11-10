@@ -18,9 +18,18 @@ interface ClosedMonthDao {
     @Query("SELECT EXISTS(SELECT 1 FROM closed_months WHERE month = :month)")
     suspend fun isClosed(month: String): Boolean
 
+    @Query("SELECT * FROM closed_months")
+    suspend fun getAll(): List<ClosedMonthEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun closeMonth(entity: ClosedMonthEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(closedMonths: List<ClosedMonthEntity>)
+
     @Query("DELETE FROM closed_months WHERE month = :month")
     suspend fun reopenMonth(month: String)
+
+    @Query("DELETE FROM closed_months")
+    suspend fun deleteAll()
 }

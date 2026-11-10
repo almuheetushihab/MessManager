@@ -2,6 +2,7 @@ package com.messmanager.app.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.messmanager.app.data.local.entity.BazarEntity
@@ -12,8 +13,14 @@ interface BazarDao {
     @Query("SELECT * FROM bazar ORDER BY epochDay DESC, id DESC")
     fun observeAll(): Flow<List<BazarEntity>>
 
-    @Insert
+    @Query("SELECT * FROM bazar")
+    suspend fun getAll(): List<BazarEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(bazar: BazarEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(bazars: List<BazarEntity>)
 
     @Update
     suspend fun update(bazar: BazarEntity)
@@ -23,4 +30,7 @@ interface BazarDao {
 
     @Query("DELETE FROM bazar WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM bazar")
+    suspend fun deleteAll()
 }
