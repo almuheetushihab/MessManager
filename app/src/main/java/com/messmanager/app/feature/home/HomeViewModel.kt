@@ -28,11 +28,45 @@ class HomeViewModel @Inject constructor(
         combine(
             calculateMessSummary(month),
             repository.observeMealsByDay(LocalDate.now().toEpochDay()),
-        ) { summary, todayMeals ->
+            repository.observeBazar(),
+            repository.observeDeposits(),
+        ) { summary, todayMeals, bazarList, depositList ->
+            val needsAttention = summary.members
+                .filter { it.balance < -0.01 }
+                .sortedBy { it.balance }
+
+            val bazarActivities = bazarList.map { bazar ->
+                RecentActivity(
+                    id = "bazar_${bazar.id}",
+                    title = bazar.category.name, // resolved in UI or formatted
+                    subtitle = bazar.paidByMemberName ?: "",
+                    amount = bazar.amount,
+                    epochDay = bazar.epochDay,
+                    type = RecentActivity.ActivityType.BAZAR,
+                )
+            }
+
+            val depositActivities = depositList.map { deposit ->
+                RecentActivity(
+                    id = "deposit_${deposit.id}",
+                    title = deposit.memberName,
+                    subtitle = deposit.method.name,
+                    amount = deposit.amount,
+                    epochDay = deposit.epochDay,
+                    type = RecentActivity.ActivityType.DEPOSIT,
+                )
+            }
+
+            val combinedActivities = (bazarActivities + depositActivities)
+                .sortedByDescending { it.epochDay }
+                .take(5)
+
             HomeUiState(
                 isLoading = false,
                 summary = summary,
                 todayMeals = todayMeals.sumOf { it.totalCount },
+                recentActivities = combinedActivities,
+                needsAttentionMembers = needsAttention,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())

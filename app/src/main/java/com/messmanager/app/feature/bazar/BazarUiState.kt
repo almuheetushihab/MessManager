@@ -33,4 +33,5 @@ data class BazarUiState(
     val isMonthClosed: Boolean = false,
     val form: BazarFormState? = null,
     val recentlyDeletedBazar: Bazar? = null,
+    val showSavedMessage: Boolean = false,
 )

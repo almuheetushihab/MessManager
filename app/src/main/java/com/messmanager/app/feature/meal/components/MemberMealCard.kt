@@ -3,6 +3,7 @@ package com.messmanager.app.feature.meal.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -22,15 +23,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
+import com.messmanager.app.core.util.capitalizeWords
+import com.messmanager.app.core.util.formatNumber
 import com.messmanager.app.domain.model.MealEntry
 import com.messmanager.app.domain.model.MealType
 import com.messmanager.app.feature.meal.MemberMealUi
 import com.messmanager.app.ui.components.AppCard
+import com.messmanager.app.ui.components.MemberAvatar
 
 @Composable
 fun MemberMealCard(
@@ -49,18 +54,25 @@ fun MemberMealCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = item.member.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = stringResource(R.string.meal_member_day_total, entry.totalCount),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
+            ) {
+                MemberAvatar(name = item.member.name)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = item.member.name.capitalizeWords(),
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        text = stringResource(R.string.meal_member_day_total, entry.totalCount),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             if (isAllMealsOn) {
                 AssistChip(
@@ -93,9 +105,11 @@ fun MemberMealCard(
                     onClick = { onToggle(entry, type) },
                     enabled = enabled,
                     label = { Text(stringResource(type.labelRes)) },
+                    modifier = Modifier.defaultMinSize(minHeight = 48.dp),
                 )
             }
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -108,11 +122,23 @@ fun MemberMealCard(
                 maxLines = 1,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { onGuestsChange(entry, -1) }, enabled = enabled && entry.guests > 0) {
+                IconButton(
+                    onClick = { onGuestsChange(entry, -1) },
+                    enabled = enabled && entry.guests > 0,
+                    modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp),
+                ) {
                     Icon(Icons.Rounded.Remove, contentDescription = stringResource(R.string.content_desc_decrease))
                 }
-                Text(text = entry.guests.toString(), style = MaterialTheme.typography.titleMedium, maxLines = 1)
-                IconButton(onClick = { onGuestsChange(entry, 1) }, enabled = enabled) {
+                Text(
+                    text = formatNumber(entry.guests),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                )
+                IconButton(
+                    onClick = { onGuestsChange(entry, 1) },
+                    enabled = enabled,
+                    modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp),
+                ) {
                     Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.content_desc_increase))
                 }
             }

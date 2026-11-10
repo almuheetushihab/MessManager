@@ -23,13 +23,24 @@ class MembersViewModel @Inject constructor(
 
     private val form = MutableStateFlow<MemberFormState?>(null)
     private val memberToDelete = MutableStateFlow<Member?>(null)
+    private val recentlyDeleted = MutableStateFlow<Member?>(null)
+    private val showSavedMsg = MutableStateFlow(false)
 
     val uiState: StateFlow<MembersUiState> = combine(
         repository.observeMembers(),
         form,
         memberToDelete,
-    ) { members, form, toDelete ->
-        MembersUiState(isLoading = false, members = members, form = form, memberToDelete = toDelete)
+        recentlyDeleted,
+        showSavedMsg,
+    ) { members, form, toDelete, deleted, savedMsg ->
+        MembersUiState(
+            isLoading = false,
+            members = members,
+            form = form,
+            memberToDelete = toDelete,
+            recentlyDeletedMember = deleted,
+            showSavedMessage = savedMsg,
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MembersUiState())
 
     fun onAddClick() = form.update { MemberFormState() }
@@ -46,6 +57,7 @@ class MembersViewModel @Inject constructor(
         viewModelScope.launch {
             repository.addMember(Member(name = current.name.trim(), phone = current.phone.trim()))
             form.update { null }
+            showSavedMsg.value = true
         }
     }
 
@@ -54,10 +66,27 @@ class MembersViewModel @Inject constructor(
 
     fun onConfirmDelete() {
         val member = memberToDelete.value ?: return
+        recentlyDeleted.value = member
         viewModelScope.launch {
             repository.deleteMember(member.id)
             memberToDelete.update { null }
         }
+    }
+
+    fun onUndoDelete() {
+        val memberToRestore = recentlyDeleted.value ?: return
+        viewModelScope.launch {
+            repository.addMember(memberToRestore)
+            recentlyDeleted.value = null
+        }
+    }
+
+    fun onClearUndo() {
+        recentlyDeleted.value = null
+    }
+
+    fun onClearSavedMessage() {
+        showSavedMsg.value = false
     }
 
     private companion object {

@@ -24,20 +24,27 @@ class ReportViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val dialogState = MutableStateFlow(DialogState())
+    private val sortOrderState = MutableStateFlow(ReportSortOrder.NAME)
 
     val uiState: StateFlow<ReportUiState> = repository.selectedMonth.flatMapLatest { month ->
         combine(
             calculateMessSummary(month),
             dialogState,
-        ) { summary, dialogs ->
+            sortOrderState,
+        ) { summary, dialogs, sortOrder ->
             ReportUiState(
                 isLoading = false,
                 summary = summary,
+                sortOrder = sortOrder,
                 showCloseDialog = dialogs.showClose,
                 showReopenDialog = dialogs.showReopen,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), ReportUiState())
+
+    fun onSortOrderChange(order: ReportSortOrder) {
+        sortOrderState.value = order
+    }
 
     fun onPreviousMonth() {
         repository.setSelectedMonth(repository.selectedMonth.value.minusMonths(1))

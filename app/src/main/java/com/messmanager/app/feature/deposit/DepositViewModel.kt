@@ -29,6 +29,7 @@ class DepositViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val form = MutableStateFlow<DepositFormState?>(null)
+    private val messageState = MutableStateFlow(MessageState())
 
     val uiState: StateFlow<DepositUiState> = repository.selectedMonth.flatMapLatest { month ->
         val range = month.epochRange()
@@ -37,13 +38,16 @@ class DepositViewModel @Inject constructor(
             repository.observeMembers(),
             repository.observeIsMonthClosed(month),
             form,
-        ) { deposits, members, isClosed, form ->
+            messageState,
+        ) { deposits, members, isClosed, form, messages ->
             DepositUiState(
                 isLoading = false,
                 items = deposits,
                 members = members,
                 isMonthClosed = isClosed,
                 form = form,
+                recentlyDeletedDeposit = messages.recentlyDeleted,
+                showSavedMessage = messages.showSaved,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), DepositUiState())
@@ -90,13 +94,37 @@ class DepositViewModel @Inject constructor(
                 ),
             )
             form.update { null }
+            messageState.update { it.copy(showSaved = true) }
         }
     }
 
     fun onDelete(deposit: Deposit) {
         if (uiState.value.isMonthClosed) return
+        messageState.update { it.copy(recentlyDeleted = deposit) }
         viewModelScope.launch { repository.deleteDeposit(deposit.id) }
     }
+
+    fun onUndoDelete() {
+        if (uiState.value.isMonthClosed) return
+        val depositToRestore = messageState.value.recentlyDeleted ?: return
+        viewModelScope.launch {
+            repository.addDeposit(depositToRestore)
+            messageState.update { it.copy(recentlyDeleted = null) }
+        }
+    }
+
+    fun onClearUndo() {
+        messageState.update { it.copy(recentlyDeleted = null) }
+    }
+
+    fun onClearSavedMessage() {
+        messageState.update { it.copy(showSaved = false) }
+    }
+
+    private data class MessageState(
+        val recentlyDeleted: Deposit? = null,
+        val showSaved: Boolean = false,
+    )
 
     private companion object {
         const val STOP_TIMEOUT_MS = 5_000L

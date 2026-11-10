@@ -1,6 +1,7 @@
 package com.messmanager.app.feature.members
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,8 +10,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,6 +46,9 @@ fun MembersScreen(
         onBack = onBack,
         onAddClick = viewModel::onAddClick,
         onDeleteClick = viewModel::onDeleteClick,
+        onUndoDelete = viewModel::onUndoDelete,
+        onClearUndo = viewModel::onClearUndo,
+        onClearSavedMessage = viewModel::onClearSavedMessage,
         onNameChange = viewModel::onNameChange,
         onPhoneChange = viewModel::onPhoneChange,
         onSave = viewModel::onSave,
@@ -55,6 +64,9 @@ fun MembersContent(
     onBack: () -> Unit,
     onAddClick: () -> Unit,
     onDeleteClick: (Member) -> Unit,
+    onUndoDelete: () -> Unit,
+    onClearUndo: () -> Unit,
+    onClearSavedMessage: () -> Unit,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     onSave: () -> Unit,
@@ -62,16 +74,44 @@ fun MembersContent(
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val deletedMessage = stringResource(R.string.msg_member_deleted)
+    val savedMessage = stringResource(R.string.msg_member_saved)
+    val undoActionLabel = stringResource(R.string.action_undo)
+
+    LaunchedEffect(state.recentlyDeletedMember) {
+        if (state.recentlyDeletedMember != null) {
+            val result = snackbarHostState.showSnackbar(
+                message = deletedMessage,
+                actionLabel = undoActionLabel,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                onUndoDelete()
+            }
+            onClearUndo()
+        }
+    }
+
+    LaunchedEffect(state.showSavedMessage) {
+        if (state.showSavedMessage) {
+            snackbarHostState.showSnackbar(message = savedMessage)
+            onClearSavedMessage()
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = { AppTopBar(title = stringResource(R.string.members_title), onBack = onBack) },
         floatingActionButton = { AddFab(onClick = onAddClick) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { padding ->
         when {
             state.isLoading -> LoadingState(Modifier.padding(padding))
             state.members.isEmpty() -> EmptyState(
                 message = stringResource(R.string.members_empty),
                 icon = Icons.Rounded.Group,
+                actionLabel = stringResource(R.string.action_add_first_member),
+                onActionClick = onAddClick,
                 modifier = Modifier.padding(padding),
             )
             else -> LazyColumn(
@@ -80,7 +120,9 @@ fun MembersContent(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
             ) {
                 items(state.members, key = { it.id }) { member ->
-                    MemberItem(member = member, onDelete = { onDeleteClick(member) })
+                    Box(modifier = Modifier.animateItem()) {
+                        MemberItem(member = member, onDelete = { onDeleteClick(member) })
+                    }
                 }
             }
         }
@@ -115,6 +157,9 @@ private fun MembersScreenNormalPreview() {
             onBack = {},
             onAddClick = {},
             onDeleteClick = {},
+            onUndoDelete = {},
+            onClearUndo = {},
+            onClearSavedMessage = {},
             onNameChange = {},
             onPhoneChange = {},
             onSave = {},
@@ -134,6 +179,9 @@ private fun MembersScreenEmptyPreview() {
             onBack = {},
             onAddClick = {},
             onDeleteClick = {},
+            onUndoDelete = {},
+            onClearUndo = {},
+            onClearSavedMessage = {},
             onNameChange = {},
             onPhoneChange = {},
             onSave = {},
@@ -153,44 +201,9 @@ private fun MembersScreenLoadingPreview() {
             onBack = {},
             onAddClick = {},
             onDeleteClick = {},
-            onNameChange = {},
-            onPhoneChange = {},
-            onSave = {},
-            onDismissForm = {},
-            onConfirmDelete = {},
-            onDismissDelete = {},
-        )
-    }
-}
-
-@ThemePreviews
-@Composable
-private fun MembersScreenFormPreview() {
-    PreviewSurface {
-        MembersContent(
-            state = PreviewData.membersForm,
-            onBack = {},
-            onAddClick = {},
-            onDeleteClick = {},
-            onNameChange = {},
-            onPhoneChange = {},
-            onSave = {},
-            onDismissForm = {},
-            onConfirmDelete = {},
-            onDismissDelete = {},
-        )
-    }
-}
-
-@ThemePreviews
-@Composable
-private fun MembersScreenDeletePreview() {
-    PreviewSurface {
-        MembersContent(
-            state = PreviewData.membersDelete,
-            onBack = {},
-            onAddClick = {},
-            onDeleteClick = {},
+            onUndoDelete = {},
+            onClearUndo = {},
+            onClearSavedMessage = {},
             onNameChange = {},
             onPhoneChange = {},
             onSave = {},

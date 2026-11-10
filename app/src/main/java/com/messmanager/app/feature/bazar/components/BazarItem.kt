@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,11 +32,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
+import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.core.util.formatEpochDay
 import com.messmanager.app.domain.model.Bazar
 import com.messmanager.app.domain.model.BazarCategory
@@ -80,7 +83,7 @@ fun BazarItem(
                         overflow = TextOverflow.Ellipsis,
                     )
                     val paidByText = bazar.paidByMemberName?.let {
-                        stringResource(R.string.bazar_paid_by_member, it)
+                        stringResource(R.string.bazar_paid_by_member, it.capitalizeWords())
                     } ?: stringResource(R.string.bazar_paid_by_mess_fund)
 
                     Text(
@@ -97,7 +100,10 @@ fun BazarItem(
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                 )
-                IconButton(onClick = onDelete) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
                         contentDescription = stringResource(R.string.content_desc_delete),

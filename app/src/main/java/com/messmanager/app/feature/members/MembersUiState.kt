@@ -14,4 +14,6 @@ data class MembersUiState(
     val members: List<Member> = emptyList(),
     val form: MemberFormState? = null,
     val memberToDelete: Member? = null,
+    val recentlyDeletedMember: Member? = null,
+    val showSavedMessage: Boolean = false,
 )

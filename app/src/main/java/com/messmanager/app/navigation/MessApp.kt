@@ -26,6 +26,14 @@ fun MessApp() {
     val currentDestination = backStackEntry?.destination
     val showBottomBar = bottomNavItems.any { it.destination.route == currentDestination?.route }
 
+    val navigateToTopLevel = { destination: AppDestination ->
+        navController.navigate(destination.route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0),
@@ -33,13 +41,7 @@ fun MessApp() {
             if (showBottomBar) {
                 AppBottomBar(
                     currentDestination = currentDestination,
-                    onNavigate = { destination ->
-                        navController.navigate(destination.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+                    onNavigate = navigateToTopLevel,
                 )
             }
         },
@@ -50,12 +52,21 @@ fun MessApp() {
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         ) {
             composable(AppDestination.Home.route) {
-                HomeScreen(onOpenMembers = { navController.navigate(AppDestination.Members.route) })
+                HomeScreen(
+                    onOpenMembers = { navController.navigate(AppDestination.Members.route) },
+                    onNavigateToMeal = { navigateToTopLevel(AppDestination.Meal) },
+                    onNavigateToBazar = { navigateToTopLevel(AppDestination.Bazar) },
+                    onNavigateToDeposit = { navigateToTopLevel(AppDestination.Deposit) },
+                )
             }
-            composable(AppDestination.Meal.route) { MealScreen() }
+            composable(AppDestination.Meal.route) {
+                MealScreen(onOpenMembers = { navController.navigate(AppDestination.Members.route) })
+            }
             composable(AppDestination.Bazar.route) { BazarScreen() }
             composable(AppDestination.Deposit.route) { DepositScreen() }
-            composable(AppDestination.Report.route) { ReportScreen() }
+            composable(AppDestination.Report.route) {
+                ReportScreen(onOpenMembers = { navController.navigate(AppDestination.Members.route) })
+            }
             composable(AppDestination.Members.route) {
                 MembersScreen(onBack = { navController.popBackStack() })
             }

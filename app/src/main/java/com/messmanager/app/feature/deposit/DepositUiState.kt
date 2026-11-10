@@ -19,4 +19,6 @@ data class DepositUiState(
     val members: List<Member> = emptyList(),
     val isMonthClosed: Boolean = false,
     val form: DepositFormState? = null,
+    val recentlyDeletedDeposit: Deposit? = null,
+    val showSavedMessage: Boolean = false,
 )

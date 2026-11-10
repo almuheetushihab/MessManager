@@ -36,6 +36,15 @@
     <string name="home_today_meals">Today\'s meals</string>
     <string name="home_outstanding_baki">Outstanding Baki</string>
     <string name="home_members_count">%1$d members in this mess</string>
+    <string name="home_needs_attention">Needs Attention</string>
+    <string name="home_recent_activity">Recent Activity</string>
+    <string name="home_quick_actions">Quick Actions</string>
+    <string name="home_no_due">All balances are settled</string>
+    <string name="home_no_recent_activity">No recent activity</string>
+    <string name="home_add_meal">Add Meal</string>
+    <string name="home_add_bazar">Add Bazar</string>
+    <string name="home_add_deposit">Add Deposit</string>
+    <string name="home_owes">Owes %1$s</string>
 
     <!-- Meal -->
     <string name="meal_title">Daily Meal</string>
@@ -149,6 +158,23 @@
     <string name="report_balance_receivable">Will get back</string>
     <string name="report_balance_payable">Needs to pay</string>
     <string name="report_empty">No data for this month yet.</string>
+    <string name="report_summary">Summary</string>
+    <string name="report_total_deposit">Total Deposit</string>
+    <string name="report_sort_name">Name</string>
+    <string name="report_sort_highest_due">Highest Due</string>
+    <string name="report_sort_highest_refund">Highest Refund</string>
+    <string name="report_status_due">Due</string>
+    <string name="report_status_refund">Refund</string>
+    <string name="report_status_settled">Settled</string>
+
+    <!-- Feedback & Messages -->
+    <string name="action_add_first_member">Add first member</string>
+    <string name="msg_member_saved">Member saved</string>
+    <string name="msg_member_deleted">Member deleted</string>
+    <string name="msg_deposit_saved">Deposit saved</string>
+    <string name="msg_deposit_deleted">Deposit deleted</string>
+    <string name="msg_bazar_saved">Bazar saved</string>
+    <string name="msg_meals_updated">Meals updated</string>
 
     <!-- Errors -->
     <string name="error_invalid_amount">Enter a valid amount greater than zero.</string>

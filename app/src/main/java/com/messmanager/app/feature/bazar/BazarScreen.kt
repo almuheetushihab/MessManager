@@ -1,5 +1,7 @@
 package com.messmanager.app.feature.bazar
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,27 +9,35 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.LocalGroceryStore
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.messmanager.app.R
@@ -62,6 +72,7 @@ fun BazarScreen(viewModel: BazarViewModel = hiltViewModel()) {
         onMarkAsPaid = viewModel::onMarkAsPaid,
         onUndoDelete = viewModel::onUndoDelete,
         onClearUndo = viewModel::onClearUndo,
+        onClearSavedMessage = viewModel::onClearSavedMessage,
         onAmountChange = viewModel::onAmountChange,
         onQuickAmountClick = viewModel::onQuickAmountClick,
         onCategoryChange = viewModel::onCategoryChange,
@@ -89,6 +100,7 @@ fun BazarContent(
     onMarkAsPaid: (Bazar) -> Unit,
     onUndoDelete: () -> Unit,
     onClearUndo: () -> Unit,
+    onClearSavedMessage: () -> Unit,
     onAmountChange: (String) -> Unit,
     onQuickAmountClick: (Int) -> Unit,
     onCategoryChange: (BazarCategory) -> Unit,
@@ -104,6 +116,7 @@ fun BazarContent(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val deletedMessage = stringResource(R.string.bazar_deleted_msg)
+    val savedMessage = stringResource(R.string.msg_bazar_saved)
     val undoActionLabel = stringResource(R.string.action_undo)
 
     LaunchedEffect(state.recentlyDeletedBazar) {
@@ -116,6 +129,13 @@ fun BazarContent(
                 onUndoDelete()
             }
             onClearUndo()
+        }
+    }
+
+    LaunchedEffect(state.showSavedMessage) {
+        if (state.showSavedMessage) {
+            snackbarHostState.showSnackbar(message = savedMessage)
+            onClearSavedMessage()
         }
     }
 
@@ -141,7 +161,7 @@ fun BazarContent(
                 isClosed = state.isMonthClosed,
             )
 
-            if (state.isMonthClosed) {
+            AnimatedVisibility(visible = state.isMonthClosed) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -162,6 +182,8 @@ fun BazarContent(
                 state.items.isEmpty() -> EmptyState(
                     message = stringResource(R.string.bazar_empty),
                     icon = Icons.Rounded.LocalGroceryStore,
+                    actionLabel = if (!state.isMonthClosed) stringResource(R.string.bazar_add_title) else null,
+                    onActionClick = onAddClick,
                 )
                 else -> {
                     val groupedItems = remember(state.items) {
@@ -179,16 +201,70 @@ fun BazarContent(
                                 )
                             }
                             items(itemsForDay, key = { it.id }) { bazar ->
-                                BazarItem(
-                                    bazar = bazar,
-                                    onEdit = { if (!state.isMonthClosed) onEditClick(bazar) },
-                                    onDelete = { if (!state.isMonthClosed) onDelete(bazar) },
-                                    onMarkAsPaid = { if (!state.isMonthClosed) onMarkAsPaid(bazar) },
-                                    modifier = Modifier.padding(
-                                        horizontal = MaterialTheme.dimens.spaceM,
-                                        vertical = MaterialTheme.dimens.spaceXs,
-                                    ),
-                                )
+                                Box(modifier = Modifier.animateItem()) {
+                                    if (!state.isMonthClosed) {
+                                        val dismissState = rememberSwipeToDismissBoxState(
+                                            confirmValueChange = { dismissValue ->
+                                                if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                                                    onDelete(bazar)
+                                                    true
+                                                } else {
+                                                    false
+                                                }
+                                            },
+                                        )
+                                        SwipeToDismissBox(
+                                            state = dismissState,
+                                            enableDismissFromStartToEnd = false,
+                                            enableDismissFromEndToStart = true,
+                                            backgroundContent = {
+                                                val color by animateColorAsState(
+                                                    if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                                                        MaterialTheme.colorScheme.errorContainer
+                                                    } else {
+                                                        Color.Transparent
+                                                    },
+                                                    label = "backgroundColor",
+                                                )
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .background(color, shape = MaterialTheme.shapes.medium)
+                                                        .padding(horizontal = 16.dp),
+                                                    contentAlignment = Alignment.CenterEnd,
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Rounded.Delete,
+                                                        contentDescription = stringResource(R.string.content_desc_delete),
+                                                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                                                    )
+                                                }
+                                            },
+                                        ) {
+                                            BazarItem(
+                                                bazar = bazar,
+                                                onEdit = { onEditClick(bazar) },
+                                                onDelete = { onDelete(bazar) },
+                                                onMarkAsPaid = { onMarkAsPaid(bazar) },
+                                                modifier = Modifier.padding(
+                                                    horizontal = MaterialTheme.dimens.spaceM,
+                                                    vertical = MaterialTheme.dimens.spaceXs,
+                                                ),
+                                            )
+                                        }
+                                    } else {
+                                        BazarItem(
+                                            bazar = bazar,
+                                            onEdit = {},
+                                            onDelete = {},
+                                            onMarkAsPaid = {},
+                                            modifier = Modifier.padding(
+                                                horizontal = MaterialTheme.dimens.spaceM,
+                                                vertical = MaterialTheme.dimens.spaceXs,
+                                            ),
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -262,6 +338,7 @@ private fun BazarScreenNormalPreview() {
             onMarkAsPaid = {},
             onUndoDelete = {},
             onClearUndo = {},
+            onClearSavedMessage = {},
             onAmountChange = {},
             onQuickAmountClick = {},
             onCategoryChange = {},
@@ -292,6 +369,7 @@ private fun BazarScreenEmptyPreview() {
             onMarkAsPaid = {},
             onUndoDelete = {},
             onClearUndo = {},
+            onClearSavedMessage = {},
             onAmountChange = {},
             onQuickAmountClick = {},
             onCategoryChange = {},
@@ -322,6 +400,7 @@ private fun BazarScreenLoadingPreview() {
             onMarkAsPaid = {},
             onUndoDelete = {},
             onClearUndo = {},
+            onClearSavedMessage = {},
             onAmountChange = {},
             onQuickAmountClick = {},
             onCategoryChange = {},

@@ -30,7 +30,7 @@ class BazarViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val form = MutableStateFlow<BazarFormState?>(null)
-    private val recentlyDeleted = MutableStateFlow<Bazar?>(null)
+    private val messageState = MutableStateFlow(MessageState())
 
     val uiState: StateFlow<BazarUiState> = repository.selectedMonth.flatMapLatest { month ->
         val range = month.epochRange()
@@ -39,15 +39,16 @@ class BazarViewModel @Inject constructor(
             repository.observeMembers(),
             repository.observeIsMonthClosed(month),
             form,
-            recentlyDeleted,
-        ) { items, members, isClosed, form, deleted ->
+            messageState,
+        ) { items, members, isClosed, form, messages ->
             BazarUiState(
                 isLoading = false,
                 items = items,
                 members = members,
                 isMonthClosed = isClosed,
                 form = form,
-                recentlyDeletedBazar = deleted,
+                recentlyDeletedBazar = messages.recentlyDeleted,
+                showSavedMessage = messages.showSaved,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BazarUiState())
@@ -166,6 +167,7 @@ class BazarViewModel @Inject constructor(
                 repository.addBazar(item)
             }
             form.update { null }
+            messageState.update { it.copy(showSaved = true) }
         }
     }
 
@@ -178,22 +180,31 @@ class BazarViewModel @Inject constructor(
 
     fun onDelete(bazar: Bazar) {
         if (uiState.value.isMonthClosed) return
-        recentlyDeleted.value = bazar
+        messageState.update { it.copy(recentlyDeleted = bazar) }
         viewModelScope.launch { repository.deleteBazar(bazar.id) }
     }
 
     fun onUndoDelete() {
         if (uiState.value.isMonthClosed) return
-        val bazarToRestore = recentlyDeleted.value ?: return
+        val bazarToRestore = messageState.value.recentlyDeleted ?: return
         viewModelScope.launch {
             repository.addBazar(bazarToRestore)
-            recentlyDeleted.value = null
+            messageState.update { it.copy(recentlyDeleted = null) }
         }
     }
 
     fun onClearUndo() {
-        recentlyDeleted.value = null
+        messageState.update { it.copy(recentlyDeleted = null) }
     }
+
+    fun onClearSavedMessage() {
+        messageState.update { it.copy(showSaved = false) }
+    }
+
+    private data class MessageState(
+        val recentlyDeleted: Bazar? = null,
+        val showSaved: Boolean = false,
+    )
 
     private companion object {
         const val STOP_TIMEOUT_MS = 5_000L

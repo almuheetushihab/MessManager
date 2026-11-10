@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,8 +21,10 @@ import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
+import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.domain.model.Member
 import com.messmanager.app.ui.components.AppCard
+import com.messmanager.app.ui.components.MemberAvatar
 
 @Composable
 fun MemberItem(
@@ -37,14 +38,10 @@ fun MemberItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceM),
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Person,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
+            MemberAvatar(name = member.name)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = member.name,
+                    text = member.name.capitalizeWords(),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

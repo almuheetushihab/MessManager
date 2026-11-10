@@ -3,6 +3,7 @@ package com.messmanager.app.feature.deposit.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -16,15 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.messmanager.app.R
 import com.messmanager.app.core.preview.PreviewData
 import com.messmanager.app.core.preview.PreviewSurface
 import com.messmanager.app.core.preview.ThemePreviews
 import com.messmanager.app.core.theme.dimens
 import com.messmanager.app.core.theme.extraColors
+import com.messmanager.app.core.util.capitalizeWords
 import com.messmanager.app.core.util.formatEpochDay
 import com.messmanager.app.domain.model.Deposit
 import com.messmanager.app.ui.components.AppCard
+import com.messmanager.app.ui.components.MemberAvatar
 import com.messmanager.app.ui.components.formatMoney
 
 @Composable
@@ -39,9 +43,10 @@ fun DepositItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.spaceS),
         ) {
+            MemberAvatar(name = deposit.memberName)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = deposit.memberName,
+                    text = deposit.memberName.capitalizeWords(),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -60,7 +65,10 @@ fun DepositItem(
                 color = MaterialTheme.extraColors.success,
                 maxLines = 1,
             )
-            IconButton(onClick = onDelete) {
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp),
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = stringResource(R.string.content_desc_delete),
